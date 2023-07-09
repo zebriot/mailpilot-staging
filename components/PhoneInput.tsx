@@ -17,7 +17,6 @@ export default function PhoneInput({ setPhone }) {
         className="w-14 h-7"
         value={telephone.country}
         onChange={(e) => {
-          console.log(e.target.value);
           telephone.onChangeCountry(e.target.value as CountryCode);
         }}
         style={{ backgroundColor: "red", left: 0 }}
