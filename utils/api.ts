@@ -1,7 +1,7 @@
 import axios from "axios";
 import { EmailConfig } from "../redux/slices/steps";
 
-const BASE_URL = "http://mailpilot-staging-ij6b.vercel.app";
+const BASE_URL = "https://mailpilot-staging-ij6b.vercel.app";
 
 export const sendSignInLink = async (email: string) => {
   try {
