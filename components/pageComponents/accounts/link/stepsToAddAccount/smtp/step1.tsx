@@ -4,6 +4,13 @@ import Router from "next/router";
 import { updateEmails } from "../../../../../../utils";
 import { EmailProvider } from "../../../../../../redux/slices/steps";
 
+const validateEmail = (value) => {
+  // Regular expression pattern for email validation
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Return true if the value matches the email pattern, otherwise return false
+  return emailPattern.test(value);
+};
 export const SMTPStep1 = () => {
   const [email, setEmail] = useState("");
   const [host, setHost] = useState("");
@@ -12,11 +19,16 @@ export const SMTPStep1 = () => {
   const [isButtonDisabled, setButtonDisabled] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
 
-  const onSubmit = async() => {
-    setButtonLoading(true)
-    await updateEmails({ emailAddress: email, host, port, type: EmailProvider.Any });
+  const onSubmit = async () => {
+    setButtonLoading(true);
+    await updateEmails({
+      emailAddress: email,
+      host,
+      port,
+      type: EmailProvider.Any,
+    });
     Router.push({ pathname: "/accounts" });
-    setButtonLoading(false)
+    setButtonLoading(false);
   };
 
   useEffect(() => {
@@ -26,7 +38,6 @@ export const SMTPStep1 = () => {
       setButtonDisabled(true);
     }
   }, [isValid, host, port]);
-
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -39,14 +50,6 @@ export const SMTPStep1 = () => {
   };
   const handlePortChange = (event) => {
     setPort(event.target.value);
-  };
-
-  const validateEmail = (value) => {
-    // Regular expression pattern for email validation
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    // Return true if the value matches the email pattern, otherwise return false
-    return emailPattern.test(value);
   };
 
   return (
@@ -98,7 +101,7 @@ export const SMTPStep1 = () => {
         </p>
       </div>
       <Button
-      loading={buttonLoading}
+        loading={buttonLoading}
         title="Continue"
         onPress={onSubmit}
         preset="primary"
