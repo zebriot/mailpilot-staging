@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../../styles";
 import PhoneInput from "../../../PhoneInput";
-import { sendSignInLink } from "../../../../utils";
+import { sendSignInLink, validateEmail } from "../../../../utils";
 import Router from "next/router";
 import { LoginSteps } from "../../../../pages/login";
 import firebase from "firebase/compat/app";
