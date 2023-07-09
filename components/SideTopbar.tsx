@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Button from "./button";
 import { useAppSelector } from "../redux/store";
 import { colors } from "../styles";
@@ -99,6 +99,20 @@ const SideTopbar = ({ children }) => {
     return (
       <div className="h-full w-screen flex-row flex flex-1">{children}</div>
     );
+  useEffect(() => {
+    window.addEventListener("keydown", function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+        if (document.getElementById("search") !== document.activeElement) {
+          e.preventDefault();
+          console.log("Search is not in focus");
+          document.getElementById("search").focus();
+        } else {
+          console.log("Default action of CtrlF");
+          return true;
+        }
+      }
+    });
+  }, []);
 
   return (
     <div className="h-full w-screen flex-row flex flex-1">
@@ -208,28 +222,34 @@ const SideTopbar = ({ children }) => {
               padding: 0,
             }}
           >
-            <div className="flex flex-row items-center my-5">
-              <img src="/svg/help-circle.svg" className="h-6 w-6 mr-2" />
-              <p
-                style={{
-                  color: colors.dark100,
-                  textShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-                  fontSize: "14px",
-                  fontFamily: "Inter",
-                  fontWeight: "500",
-                }}
-              >
-                Help & Getting started
-              </p>
-            </div>
             <div
+              className={`flex flex-row items-center mt-5 transition-all duration-500 ${
+                toggleCollapse ? "justify-center" : ""
+              }`}
+            >
+              <img src="/svg/help-circle.svg" className="h-6 w-6 mr-2" />
+              {!toggleCollapse && (
+                <p
+                  style={{
+                    color: colors.dark100,
+                    textShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                    fontSize: "14px",
+                    fontFamily: "Inter",
+                    fontWeight: "500",
+                  }}
+                >
+                  Help & Getting started
+                </p>
+              )}
+            </div>
+            {/* <div
               style={{
                 borderRadius: "100px",
                 height: "40px",
                 width: "100%",
-                backgroundColor: "#EFEFEF",
+                backgroundColo r: "#EFEFEF",
               }}
-            ></div>
+            ></div> */}
           </div>
         </div>
       </div>
@@ -238,8 +258,10 @@ const SideTopbar = ({ children }) => {
           <div className="sidebar_search-container">
             <img src="/svg/search.svg" className=" h-6 w-6" />
             <input
-              className=" flex flex-row flex-1 mx-3"
+              id="search"
+              className="sidebar_search-input"
               placeholder="Search or type a command"
+              style={{ backgroundColor: "#F5F5F5" }}
             />
             <div className=" px-5 py-2 bg-white rounded-lg">
               <p
@@ -264,6 +286,7 @@ const SideTopbar = ({ children }) => {
               iconSrc="/svg/plus.svg"
               preset="primary"
               containerStyle={{ marginRight: "40px" }}
+              onPress={() => router.push("/home")}
             />
 
             {/* User's Messages , use text-1 as src for unread*/}
@@ -276,27 +299,30 @@ const SideTopbar = ({ children }) => {
             <div className="sidebar_org-container mr-3">
               {user?.company?.name.slice(0, 1) + user?.company?.name.slice(-1)}
             </div>
-
-            {/* User's Profile Image */}
-            <img
-              className="h-12 w-12 mr-3 "
-              style={{ borderRadius: "24px" }}
-              src={user?.photoUrl}
-            />
-
-            {/* User's name */}
-            <p
-              style={{
-                fontWeight: "600",
-                fontSize: "18px",
-                lineHeight: "22px",
-                display: "flex",
-                alignItems: "center",
-                color: "#000000",
-              }}
+            <div
+              className="flex flex-row items-center align-middle cursor-pointer"
+              onClick={() => router.push("/accounts/settings")}
             >
-              {user?.name}
-            </p>
+              {/* User's Profile Image */}
+              <img
+                className="h-12 w-12 mr-3 "
+                style={{ borderRadius: "24px" }}
+                src={user?.photoUrl}
+              />
+              {/* User's name */}
+              <p
+                style={{
+                  fontWeight: "600",
+                  fontSize: "18px",
+                  lineHeight: "22px",
+                  display: "flex",
+                  alignItems: "center",
+                  color: "#000000",
+                }}
+              >
+                {user?.name}
+              </p>
+            </div>
           </div>
         </div>
         <div className="child-container">{children}</div>

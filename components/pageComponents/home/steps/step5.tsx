@@ -20,7 +20,14 @@ import {
   updateEmailAtIndex,
 } from "../../../../redux/slices/steps";
 import { colors } from "../../../../styles";
-import { callDaVinci, scrapeData } from "../../../../utils";
+import {
+  callDaVinci,
+  parseEmailFromOpenAI,
+  scrapeData,
+  sendEmail,
+  validateEmail,
+} from "../../../../utils";
+import { useToast } from "../../../../utils/toastProvider";
 
 const convertHTMLtoEditorState = (html: string) => {
   const blocksFromHTML = convertFromHTML(html);
@@ -47,41 +54,43 @@ const getCharCount = (state: EditorState) => {
 
 export const Step5 = () => {
   const dispatch = useAppDispatch();
-
+  const { addToast } = useToast();
   const [editorState, setEditorState] = useState(convertHTMLtoEditorState(""));
 
   const prev = () => {
     setIndex(index - 1);
-    // dispatch(setCurrentHomeStep({ step: HomeSteps.brainstorming }));
-    // Router.push({
-    //   pathname: "/home",
-    //   query: { step: HomeSteps.brainstorming },
-    // });
   };
 
-  const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState("");
-  const [metadata, setMetadata] = useState("");
+  const [subject, setSubject] = useState("");
   const [index, setIndex] = useState(0);
   const [copiedIndex, setCopiedIndex] = useState<number | undefined>(undefined);
   const [currentlyRegenerating, setCurrentlyRegenerating] = useState<
     number | undefined
   >(undefined);
-
+  const [currentlySending, setCurrentlySending] = useState<number | undefined>(
+    undefined
+  );
   const editorRef = useRef<Editor>();
   const emails = useAppSelector((state) => state.state.emails);
-
-  const addEmail = (x: { email: string; metadata: any; data: any }) => {
-    dispatch(addToEmails(x));
-  };
+  const user = useAppSelector((state) => state.state.user);
+  const selectedEmailConfig = useAppSelector(
+    (state) => state.state.selectedEmailConfig
+  );
 
   const csv = useAppSelector((state) => state.state.csv);
 
   const regenerateEmailAtIndex = async () => {
     setCurrentlyRegenerating(index);
-    const email = await callDaVinci(emails[index].metadata);
+    const email = await callDaVinci(user, emails[index].metadata);
     dispatch(updateEmailAtIndex({ email, index }));
     setCurrentlyRegenerating(undefined);
+    addToast({
+      appearance: "success",
+      title: "Email Regenerated !",
+      message: `Your email for ${
+        emails[index].data?.[csv.labels.website]
+      } was succesfully regenerated.`,
+    });
   };
 
   // Editing Related Functions
@@ -107,8 +116,44 @@ export const Step5 = () => {
     }
   }, []);
 
-  const send = () => {
-    console.log(emails[index]?.metadata);
+  const send = async () => {
+    setCurrentlySending(index);
+    const emailArr = emails[index].data?.[csv.labels.email]
+      ?.split(";")
+      ?.filter((i) => validateEmail(i));
+    if (emailArr?.length === 0) {
+      addToast({
+        appearance: "error",
+        title: "No Email Found !",
+        message: `Check your spreadsheet for the domain : ${
+          emails[index].data?.[csv.labels.website]
+        }`,
+      });
+      setCurrentlySending(undefined);
+
+      return;
+    }
+    const res = parseEmailFromOpenAI(emails[index]?.email);
+
+    const resSend = await sendEmail({
+      emailConfig: selectedEmailConfig,
+      email: res,
+      toAddress: emailArr[0],
+    });
+    if (resSend) {
+      addToast({
+        appearance: "success",
+        title: "Email Sent !",
+        message: `The email was successfully sent to ${emailArr[0]}`,
+      });
+    } else {
+      addToast({
+        appearance: "error",
+        title: "Unable to Send Email !",
+        message: `Make sure you are using the correct password or try later.`,
+      });
+    }
+    setCurrentlySending(undefined);
   };
 
   const onCopy = () => {
@@ -117,14 +162,17 @@ export const Step5 = () => {
     navigator.clipboard.writeText(
       editorState.getCurrentContent().getPlainText("")
     );
-    setTimeout(() => setCopiedIndex(undefined), 1000);
+    setTimeout(() => setCopiedIndex(undefined), 3000);
   };
 
   // handling index change
   useEffect(() => {
-    if (emails?.length > 0 && emails[index]?.email)
-      setEditorState(convertHTMLtoEditorState(emails[index]?.email));
-  }, [index, emails?.length > 0]);
+    if (emails?.length > 0 && emails[index]?.email) {
+      const res = parseEmailFromOpenAI(emails[index]?.email);
+      setSubject(res.subject);
+      setEditorState(convertHTMLtoEditorState(res.email));
+    }
+  }, [index, emails]);
 
   const handlePastedFiles = (fileArr) => {};
 
@@ -133,9 +181,9 @@ export const Step5 = () => {
       <div className="home_mail-content-container mt-5 flex flex-1 flex-col">
         <div
           className="border-bottom-light items-center  flex flex-row px-7 mt-1"
-          style={{ width: "100%", height: "70px" }}
+          style={{ width: "100%", paddingBlock: "12px" }}
         >
-          <div className="flex flex-1 flex-row cursor-pointer">
+          <div className="flex flex-1 flex-row items-center">
             <p
               className="flex flex-1"
               style={{
@@ -149,7 +197,7 @@ export const Step5 = () => {
                 className="ml-2"
                 style={{ color: colors.blackLogo, fontWeight: "600" }}
               >
-                Issues spotted on your platform
+                {subject}
               </p>
             </p>
             <img
@@ -191,6 +239,8 @@ export const Step5 = () => {
             style={{ height: "26px", width: "2px", marginInline: "20px" }}
           />
           <Button
+            disabled={currentlySending !== undefined}
+            loading={index === currentlySending}
             title="Send"
             iconSrc="/svg/send-white.svg"
             onPress={send}

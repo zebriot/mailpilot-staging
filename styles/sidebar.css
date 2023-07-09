@@ -68,6 +68,19 @@
 }
 
 
+.sidebar_search-input {
+    margin-inline: 10px;
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+}
+
+.sidebar_search-input:focus{
+    outline: none;
+    display: flex;
+    flex: 1,
+}
+
 .sidebar_org-container {
     /* Auto layout */
     display: flex;

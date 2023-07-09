@@ -36,7 +36,11 @@ export const Toast = ({
   const colorPallete = getColorPallete(appearance);
   return (
     // <DefaultToast {...props} appearance={undefined}>
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
       <div
         className="toast-container"
         style={{

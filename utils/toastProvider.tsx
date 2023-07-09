@@ -24,7 +24,7 @@ export function ToastProvider({ children }) {
     setToastStack((prevToasts) =>
       [newToast, ...prevToasts].slice(0, MAX_LENGHT)
     );
-    setTimeout(() => removeToast(id), 2000);
+    setTimeout(() => removeToast(id), 5000);
   };
 
   const removeToast = (id: number) => {

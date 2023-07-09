@@ -1,8 +1,7 @@
 import axios from "axios";
-import { collection, getDocs } from "firebase/firestore";
 import { EmailConfig } from "../redux/slices/steps";
 
-const BASE_URL = "http://192.168.29.216:3001";
+const BASE_URL = "http://mailpilot-staging-ij6b.vercel.app";
 
 export const sendSignInLink = async (email: string) => {
   try {
@@ -19,13 +18,17 @@ export const sendSignInLink = async (email: string) => {
 export const sendEmail = async ({
   emailConfig,
   toAddress,
-  email: { subject, html },
+  email: { subject, email },
 }: {
   emailConfig: EmailConfig;
   toAddress: string;
-  email: { subject: string; html: string };
+  email: { subject: string; email: string };
 }) => {
   try {
+    console.log("sendEmail  : emailConfig", emailConfig);
+    console.log("sendEmail  : toAddress", toAddress);
+    console.log("sendEmail  : email", email);
+    console.log("sendEmail  : subject", subject);
     const res = await axios.post(BASE_URL + "/send-email", {
       host: emailConfig.host,
       port: emailConfig.port,
@@ -37,8 +40,11 @@ export const sendEmail = async ({
       email: {
         to: toAddress,
         subject,
-        html,
+        html: email,
       },
     });
-  } catch (err) {}
+    return res;
+  } catch (err) {
+    return undefined;
+  }
 };

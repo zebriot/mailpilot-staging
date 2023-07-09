@@ -7,7 +7,11 @@ import { Menu, MenuItem } from "@szhsin/react-menu";
 
 import Button from "../../../button";
 import { useAppDispatch, useAppSelector } from "../../../../redux/store";
-import { mapColumns, setCurrentHomeStep } from "../../../../redux/slices/steps";
+import {
+  mapColumns,
+  setCurrentHomeStep,
+  setEmailConfig,
+} from "../../../../redux/slices/steps";
 import { HomeSteps } from "../../../../pages/home";
 import { colors } from "../../../../styles";
 import { updateEmailSetting, validateEmail } from "../../../../utils";
@@ -65,7 +69,7 @@ const getDescription = (mode) => {
 };
 
 export const Step3 = () => {
-  const { setEmailConfig } = useProcessor();
+  // const { setEmailConfig } = useProcessor();
   const dispatch = useAppDispatch();
   const selectRefs = useRef([]);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -92,12 +96,16 @@ export const Step3 = () => {
 
   const next = () => {
     console.log("next");
+    setContinueLoading(true);
     mapCols();
     dispatch(setCurrentHomeStep({ step: HomeSteps.brainstorming }));
-    Router.push({
-      pathname: "/home",
-      query: { step: HomeSteps.brainstorming },
-    });
+    setTimeout(() => {
+      setContinueLoading(false);
+      Router.push({
+        pathname: "/home",
+        query: { step: HomeSteps.brainstorming },
+      });
+    }, 1000);
   };
 
   const prev = () => {
@@ -170,11 +178,8 @@ export const Step3 = () => {
       }
       if (selectedEmail?.mode === "select") {
         // dispatch(setEmailConfig());
-        setEmailConfig(tempLinkedEmails[selectedEmail.index]);
-        Router.push({
-          pathname: "/home",
-          query: { step: HomeSteps.brainstorming },
-        });
+        dispatch(setEmailConfig(tempLinkedEmails[selectedEmail.index]));
+        next();
       }
     }
   };
@@ -333,15 +338,15 @@ export const Step3 = () => {
                     menuPortal: (base, props) => ({
                       ...base,
                       position: "absolute",
-                      offset: 10,
+                      // offset: 10,
                     }),
                     menuList: (base, props) => ({
-                      ...base,
-                      backgroundColor: "red",
-                      width: "270px",
+                      // ...base,
+                      width: "290px",
                       bordeColor: colors.light200,
-                      top: 10,
                       borderWidth: "1px",
+                      backgroundColor: "blue",
+                      maxHeight: 400,
                     }),
                     option: (base, props) => ({
                       ...base,

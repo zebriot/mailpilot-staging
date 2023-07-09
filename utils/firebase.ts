@@ -74,6 +74,7 @@ export const updateUser = async (userDetails: UserConfig) => {
 export const updateUserConfig = async (config: UserConfig, uid: string) => {
   try {
     await setDoc(doc(firestoreDB, uid), config);
+    syncUser();
   } catch (err) {
     console.log("updateUserConfig ERR : ", err);
   }
@@ -100,12 +101,11 @@ export const updateEmailSetting = async (
   syncUser();
 };
 
-
 export const syncUser = async (uid?: string) => {
   const user = await getUser(uid);
   if (user) {
     console.log("USER SYNC USER : ", user);
     store.dispatch(setUserDetails(user as UserConfig));
   }
-  return user
+  return user;
 };

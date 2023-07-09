@@ -8,12 +8,13 @@ import { HomeSteps } from "../../../../pages/home";
 import Lottie from "react-lottie";
 import * as loadingJson from "../../../../public/lottie/loading.json";
 import { useProcessor } from "../../../../utils/processorProvider";
+import { colors } from "../../../../styles";
 
 export const Step4 = () => {
   const dispatch = useAppDispatch();
   const processing = useAppSelector((s) => s.state.processing);
   const csv = useAppSelector((s) => s.state.csv);
-  const { startProcessing , progress, status} = useProcessor();
+  const { startProcessing, progress, status } = useProcessor();
   const next = () => {
     console.log("next");
     dispatch(setCurrentHomeStep({ step: HomeSteps.completed }));
@@ -59,7 +60,16 @@ export const Step4 = () => {
           isPaused={false}
           style={{ marginBottom: "40px" }}
         />
-        <p>{progress } ++ {status}</p>
+        <p
+          style={{
+            fontSize: "20px",
+            color: colors.success300,
+            fontWeight: "bold",
+          }}
+        >
+          {(progress / csv.parseData.length) * 100}%
+        </p>
+        <p style={{ fontSize: "14px", fontWeight: "bold" }}>{status}</p>
       </div>
 
       <div className="flex flex-row mt-5">
@@ -74,6 +84,8 @@ export const Step4 = () => {
           title="Edit Emails"
           iconSrc="/svg/cursor-click-white.svg"
           preset="primary"
+          // disabled={progress < csv.parseData.length / 2}
+          // disabled={progress < 5}
           onPress={next}
         />
       </div>

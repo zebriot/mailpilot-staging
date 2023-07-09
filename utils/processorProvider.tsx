@@ -21,6 +21,7 @@ const ProcessorContext = React.createContext({
 export function ProcessorProvider({ children }) {
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [failedCount, setFailedCount] = useState(0);
   const [status, setStatus] = useState("");
   const [emailConfig, setEmailConfig] = useState<EmailConfig | undefined>(
     undefined
@@ -28,8 +29,12 @@ export function ProcessorProvider({ children }) {
   const [metadata, setMetadata] = useState({});
   const csv = useAppSelector((s) => s.state.csv);
   const dispatch = useDispatch();
+
+  const increaseFailedCount = () => {
+    setFailedCount((prevState) => prevState + 1);
+  };
+
   const startProcessing = () => {
-    console.log("START PROCESSING");
     if (processing) return;
     setProcessing(true);
     scrapeData(
@@ -38,12 +43,13 @@ export function ProcessorProvider({ children }) {
       setProgress,
       setStatus,
       setMetadata,
-      addEmail
+      addEmail,
+      increaseFailedCount
     );
   };
 
   const addEmail = (x: { email: string; metadata: any; data: any }) => {
-    dispatch(addToEmails(x));
+    dispatch(addToEmails({...x}));
   };
 
   const stopProcessing = () => {

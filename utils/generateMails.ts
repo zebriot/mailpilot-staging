@@ -1,20 +1,20 @@
 import axios from "axios";
 import { load } from "cheerio";
-import { RootState } from "../redux/store";
+import store, { RootState } from "../redux/store";
 import { Configuration, OpenAIApi } from "openai";
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
 const allValidPrefixes = ["", "www."];
 
-const sender = {
-  name: "Jirazo",
-  organisation: "Sight3",
-  title: "Technical Director",
-  organisationDescription: "creative design and software development agency",
-};
+// const sender = {
+//   name: "Jirazo",
+//   organisation: "Sight3",
+//   title: "Technical Director",
+//   organisationDescription: "creative design and software development agency",
+// };
 
 export function callAPI(url: string) {
   return new Promise((resolve, reject) => {
@@ -79,7 +79,7 @@ export const scrape = async (url: string) => {
     console.log("CALLLING url : ", url);
     try {
       const res = await callAPI(
-        `https://scrape.abstractapi.com/v1/?api_key= b5f8b28716404c8b82e291b33a039ab7&url=https://` +
+        `https://scrape.abstractapi.com/v1/?api_key=${process.env.SCRAPPER_API_KEY}&url=https://` +
           allValidPrefixes[i] +
           url
       );
@@ -97,45 +97,51 @@ export const scrapeData = async (
   setProgress: (n: number) => void,
   setStatus: (s: string) => void,
   setMetadata: (a: any) => void,
-  addToEmails: (a: { email: string; metadata: any; data: any }) => void
+  addToEmails: (a: { email: string; metadata: any; data: any }) => void,
+  increaseFailedCount: () => void
 ) => {
-  const length = 3;
-  data = data.slice(0, 3);
+  const user = store.getState().state.user;
+
+  const length = 10;
+  data = data.slice(0, length);
   const metadata = {};
   for (let i = 0; i < length; i++) {
     console.log("DATA : ", data);
     const url = data?.[i]?.[label];
-    console.log("METADATA : ", i, data);
-    console.log("label : ", label);
-    console.log("url : ", data?.[i]?.[label]);
 
     // Scrapping Website
     setStatus("Scrapping " + url);
     const resMetadata = await scrape(url);
-    setProgress((i + 1) * 2 - 1);
 
     // Generating Email
     if (resMetadata !== undefined) {
       setStatus("Generating Email for " + url);
-      const email = await callDaVinci(resMetadata);
+      const email = await callDaVinci(user, resMetadata);
       addToEmails({ email, metadata: resMetadata, data: data?.[i] });
+    } else {
+      increaseFailedCount();
     }
-    setProgress((i + 1) * 2);
+    setProgress(i + 1);
 
-    metadata[url] = data;
+    metadata[url] = resMetadata;
     if (i + 1 === length) {
       setStatus("SCRAPED SUCCESFULLY. Generating Smart Emails now!");
     }
     console.log("axiosResponse : ", url, " : ", data);
   }
-  console.log("METADATA", metadata);
   setMetadata(metadata);
   return metadata;
 };
 
-export const callDaVinci = async (receiver: any) => {
-  console.log("RECEIVER : ", receiver);
-  const prompt = `Write an Email. The purpose is Outreach emails, the sender name is ${sender.name}, ${sender.title} at ${sender.organisation}, the sender organization is ${sender.organisation}, the receiver organization is ${receiver?.url}, and the additional info is ${sender.organisation} is a ${sender.organisationDescription} and the receiver's org has to do something with ${receiver?.description} \nDon't include Subject, greetings and footer.\nThe response should be a nicely designed HTML page not just text.\nPlease use sender organization, receiver organization and additional info while crafting the email to achieve personalization and the greeting should be Dear ${receiver?.site_name}`;
+export const callDaVinci = async (user: any, receiver: any) => {
+  console.log("callDaVinci user : ", user, receiver);
+  const sender = {
+    name: user?.name,
+    organisation: user?.company?.name,
+    title: user?.jobTitle,
+    organisationDescription: user?.company?.description,
+  };
+  const prompt = `Write an Email. The purpose is Outreach emails, the sender name is ${sender.name}, ${sender.title} at ${sender.organisation}, the sender organization is ${sender.organisation}, the receiver organization is ${receiver?.url}, and the additional info is ${sender.organisation} is a ${sender.organisationDescription} and the receiver's org has to do something with ${receiver?.description} \nThe subject should be wrapped around <h1> tag \nThe response should be a properly formatted wrapped in <p> tags as such in HTML, make sure its not just text.\n Please use sender organization, receiver organization and additional info while crafting the email to achieve personalization and the greeting should not exceed 40 characters and the subject should be on the top`;
   console.log("PROMPT : ", prompt);
   const resp = await openai.createCompletion({
     model: "text-davinci-003",
@@ -146,5 +152,23 @@ export const callDaVinci = async (receiver: any) => {
     presence_penalty: 0,
   });
   console.log("RESPONSE DAVINCI : ", resp.data.choices[0].text);
+
   return resp.data.choices[0]?.text;
 };
+
+export function parseEmailFromOpenAI(text: string) {
+  const temp = text.split("</h1>");
+  console.log("parseEmailFromOpenAI TEMP : temp");
+  const email = temp[temp.length - 1];
+  var subject = text
+    .match("<h1>(.*)</h1>")[1]
+    .replace("<h1>", "")
+    .replace("</h1>", "");
+
+  console.log("parseEmailFromOpenAI SUBJECT : ", subject);
+  console.log("parseEmailFromOpenAI email : ", email);
+  return {
+    email,
+    subject,
+  };
+}

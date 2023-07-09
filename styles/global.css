@@ -12,9 +12,20 @@
 @import url('../styles/accounts.css');
 @import url('../styles/toast.css');
 
-html,
+html ,
+
+
+/* Disable all scroll bars in the whole app unless styled */
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  width: 0px;
+}
 
 body {
+  scrollbar-width: none;
   padding: 0;
   margin: 0;
   font-family: 'Inter';
@@ -25,7 +36,6 @@ body {
   background-color: #F5F5F5;
   flex: 1;
   display: flex;
-
 }
 
 .h6 {
@@ -367,7 +377,6 @@ img {
 .phone-input-container {
   display: flex;
   flex-direction: row;
-  background-color: red;
   width: 100%;
   margin-bottom: 1rem;
 
