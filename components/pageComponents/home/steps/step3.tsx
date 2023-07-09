@@ -341,18 +341,17 @@ export const Step3 = () => {
                       // offset: 10,
                     }),
                     menuList: (base, props) => ({
-                      // ...base,
+                      ...base,
                       width: "290px",
-                      bordeColor: colors.light200,
-                      borderWidth: "1px",
-                      backgroundColor: "blue",
-                      maxHeight: 400,
+
                     }),
                     option: (base, props) => ({
                       ...base,
                       backgroundColor: colors.neutral100,
                       borderBottomWidth: "0.5px",
-                      bordeColor: colors.light200,
+                      borderRightWidth:"0.5px",
+
+borderLeftWidth     :"0.5px",                 bordeColor: colors.light200,
                       paddingInline: "10px",
                       paddingBlock: "5px",
                       width: "290px",
