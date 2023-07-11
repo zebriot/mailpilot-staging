@@ -1,6 +1,6 @@
 import React from "react";
 
-type ButtonPresets = "primary" | "secondary" | "delete";
+type ButtonPresets = "primary" | "secondary" | "delete" | "delete-outline";
 
 export interface ButtonProps {
   preset: ButtonPresets;
@@ -34,6 +34,12 @@ const getStylesForVariant = (preset: ButtonPresets, disabled: boolean) => {
         container: `button-container-delete ${disabled && "disabled"}`,
         icon: "button-icon-delete",
         title: "button-text-delete",
+      };
+    case "delete-outline":
+      return {
+        container: `button-container-delete-outline ${disabled && "disabled"}`,
+        icon: "button-icon-delete-outline",
+        title: "button-text-delete-outline",
       };
   }
 };

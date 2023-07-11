@@ -7,35 +7,50 @@ import { UserConfig, updateUser } from "../../../../utils";
 import Button from "../../../button";
 import firebase from "firebase/compat/app";
 import { useLoader } from "../../../../utils/providers";
-import  Router from "next/router";
+import Router from "next/router";
+import { useAppSelector } from "../../../../redux/store";
 
 export const BuildProfile = () => {
   const currentUser = firebase.auth().currentUser;
+  const userInStore = useAppSelector((s) => s.state.user);
   const [descriptionTags, setDescriptionTags] = useState<string[]>([]);
   const [name, setName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [companyDescription, setCompanyDescription] = useState("");
   const [buttonLoading, setButtonLoading] = useState(false);
-  const [disabled, setDisabled] = useState(true);
+  const [errors, setErrors] = useState({
+    jobTitle: "",
+    companyName: "",
+    companyDescription: "",
+    name: "",
+    tags: "",
+  });
   const { startLoader, stopLoader } = useLoader();
 
+  console.log("USER IN STORE ", userInStore);
+
   useEffect(() => {
-    setName(currentUser?.displayName);
+    setName(currentUser?.displayName || localStorage.getItem("MAILPILOT_linkedIn_name"));
   }, [currentUser]);
 
   const onSave = async () => {
-    if (disabled) return;
+    const isValid = validate();
+
+    if (!isValid) return;
     startLoader();
     setButtonLoading(true);
     const user = {
-      email: currentUser?.email,
-      photoUrl: currentUser?.photoURL,
+      email:
+        currentUser?.email || localStorage.getItem("MAILPILOT_linkedIn_name"),
+      photoUrl:
+        currentUser?.photoURL ||
+        localStorage.getItem("MAILPILOT_linkedIn_photoUrl"),
       name,
       jobTitle,
       description: descriptionTags,
       company: { name: companyName, description: companyDescription },
-      emailAccounts : []
+      emailAccounts: [],
     };
     await updateUser(user);
     setButtonLoading(false);
@@ -45,17 +60,45 @@ export const BuildProfile = () => {
     });
   };
 
+  const validate = () => {
+    let tempErrors = { ...errors };
+    if (name?.length === 0) {
+      tempErrors.name = "Name Required";
+    }
+    if (jobTitle?.length === 0) {
+      tempErrors.jobTitle = "Job Title Required";
+    }
+    if (companyDescription?.length < 40) {
+      tempErrors.companyDescription =
+        "Please input a bit more about your company";
+    }
+    if (companyName?.length === 0) {
+      tempErrors.companyName = "Company Name Required";
+    }
+    if (descriptionTags?.length === 0) {
+      tempErrors.tags = `Press "Enter" after typing in a tag (Upto 4 tags)`;
+    }
+    console.log("TEMP ERRORS : ", tempErrors);
+    setErrors(tempErrors);
+    const res = Object.keys(tempErrors).map((i) => tempErrors[i] === "");
+    return !res?.includes(false);
+  };
+
   useEffect(() => {
-    if (
-      name?.length > 0 &&
-      companyName?.length > 0 &&
-      descriptionTags?.length > 0 &&
-      jobTitle?.length > 0 &&
-      companyDescription?.length > 10
-    ) {
-      setDisabled(false);
-    } else {
-      setDisabled(true);
+    if (name?.length > 0 && errors?.name) {
+      setErrors((prevState) => ({ ...prevState, name: "" }));
+    }
+    if (jobTitle?.length > 0 && errors?.jobTitle) {
+      setErrors((prevState) => ({ ...prevState, jobTitle: "" }));
+    }
+    if (companyDescription?.length > 40 && errors?.companyDescription) {
+      setErrors((prevState) => ({ ...prevState, companyDescription: "" }));
+    }
+    if (companyName?.length > 0 && errors?.companyName) {
+      setErrors((prevState) => ({ ...prevState, companyName: "" }));
+    }
+    if (descriptionTags?.length > 0 && errors?.tags) {
+      setErrors((prevState) => ({ ...prevState, tags: "" }));
     }
   }, [name, companyName, descriptionTags, jobTitle, companyDescription]);
 
@@ -75,6 +118,7 @@ export const BuildProfile = () => {
               placeholder="Full Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              error={errors.name}
             />
             <Input
               containerClass="ml-2"
@@ -82,6 +126,7 @@ export const BuildProfile = () => {
               placeholder="Job Title"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
+              error={errors.jobTitle}
             />
           </div>
           <Input
@@ -89,6 +134,7 @@ export const BuildProfile = () => {
             placeholder="Company Name"
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
+            error={errors.companyName}
           />
           <TagInput
             tags={descriptionTags}
@@ -100,18 +146,19 @@ export const BuildProfile = () => {
             }}
             label="How would you describe yourself?"
             placeholder="Start typing to select keywords..."
+            error={errors.tags}
           />
           <TextArea
             value={companyDescription}
             onChange={(e) => setCompanyDescription(e.target.value)}
             label="What does your company do?"
             placeholder="Eg: A creative branding and development agency with a focus on web3 and AI"
+            error={errors.companyDescription}
           />
         </div>
         <Button
           onPress={onSave}
           loading={buttonLoading}
-          disabled={disabled}
           title="Let's Start"
           preset="primary"
           containerStyle={{ width: "100%", marginBottom: "20px" }}

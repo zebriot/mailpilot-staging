@@ -1,25 +1,63 @@
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../../styles";
-import PhoneInput from "../../../PhoneInput";
-import { sendSignInLink, validateEmail } from "../../../../utils";
-import Router from "next/router";
+import {
+  UserConfig,
+  authenticateLinkedInCode,
+  sendSignInLink,
+  validateEmail,
+} from "../../../../utils";
+import Router, { useRouter } from "next/router";
 import { LoginSteps } from "../../../../pages/login";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import { useLinkedIn } from "react-linkedin-login-oauth2";
 import Button from "../../../button";
-import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
+import {
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+  signInWithCustomToken,
+} from "firebase/auth";
+import { useAppDispatch } from "../../../../redux/store";
+import { setUserDetails } from "../../../../redux/slices/steps";
+import { useLoader } from "../../../../utils/providers";
 
 export const SignIn = () => {
   const auth = firebase.auth();
   const googleProvider = new firebase.auth.GoogleAuthProvider();
   googleProvider.setCustomParameters({ prompt: "select_account" });
-
-  console.log("AUTH : ", auth.currentUser);
+  const router = useRouter();
+  const {startLoader, stopLoader} = useLoader()
+  const dispatch = useAppDispatch();
+  const { code } = router.query;
+  useEffect(() => {
+    if (code) {
+      console.log("CODEEEE", code);
+      handleLinkedInCode(code as string);
+    }
+  }, [code]);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [isValid, setIsValid] = useState(true);
   const [isEmailSiginLoading, setEmailSiginLoading] = useState(false);
+
+  const handleLinkedInCode = async (code: string) => {
+    startLoader()
+    const res = await authenticateLinkedInCode(code);
+    dispatch(
+      setUserDetails({
+        name: res?.name,
+        photoUrl: res?.photoUrl,
+      } as UserConfig)
+    );
+    localStorage.setItem("MAILPILOT_linkedIn_name", res?.name);
+    localStorage.setItem("MAILPILOT_linkedIn_photoUrl", res?.photoUrl);
+    // await updateUser({
+    //   name: res?.name,
+    //   photoUrl: res?.photoUrl,
+    // });
+    signInWithCustomToken(auth, res?.customToken);
+    stopLoader()
+  };
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -31,6 +69,7 @@ export const SignIn = () => {
     onSuccess: (code) => {
       console.log("useLinkedIn", code);
     },
+    scope: "r_liteprofile r_emailaddress",
     onError: (error) => {
       console.log(error);
     },
@@ -112,7 +151,6 @@ export const SignIn = () => {
     // setIsValid(validateEmail(event.target.value));
   };
 
-  
   return (
     <>
       <div className="content-child-container-pre-login">
@@ -123,7 +161,7 @@ export const SignIn = () => {
         </p>
         <input
           className={`input-default ${!isValid && "invalid"}`}
-          style={{height:'52px'}}
+          style={{ height: "52px" }}
           type="email"
           value={email}
           onChange={handleInputChange}
@@ -141,7 +179,11 @@ export const SignIn = () => {
           disabled={email?.length === 0 || !isValid}
           title="Continue"
           preset="primary"
-          containerStyle={{ width: "100%", marginBottom: "20px" }}
+          containerStyle={{
+            width: "100%",
+            marginBottom: "20px",
+            marginTop: "20px",
+          }}
           loading={isEmailSiginLoading}
           onPress={handleLogin}
         />

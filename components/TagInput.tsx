@@ -1,9 +1,11 @@
 import React, { forwardRef, useImperativeHandle } from "react";
 import { InputProps, InputRef } from "./Input";
 import { colors } from "../styles";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface TagInputProps extends InputProps {
   tags: string[];
+  error?:string,
   setTags: (a: string[]) => void;
 }
 
@@ -17,6 +19,7 @@ const TagInput = forwardRef<InputRef, TagInputProps>((props, ref) => {
     className,
     onKeyDown,
     style,
+    error,
     ...rest
   } = props;
 
@@ -34,11 +37,13 @@ const TagInput = forwardRef<InputRef, TagInputProps>((props, ref) => {
   }));
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      setTags([...tags, inputRef.current.value]);
-      inputRef.current.value = "";
+    if (inputRef.current.value) {
+      if (e.key === "Enter") {
+        setTags([...tags, inputRef.current.value]);
+        inputRef.current.value = "";
+      }
+      onKeyDown && onKeyDown(e);
     }
-    onKeyDown && onKeyDown(e);
   };
 
   return (
@@ -46,11 +51,27 @@ const TagInput = forwardRef<InputRef, TagInputProps>((props, ref) => {
       {label && <p className="text-sm text-black font-medium mb-1">{label}</p>}
       <input
         ref={inputRef}
-        className={"input-default mt-1" + className}
-        style={{ marginBottom: 10,height:'52px' ,...style }}
+        className={`input-default ${error && 'invalid'} mt-1` + className}
+        style={{ height: "52px", ...style }}
         onKeyDown={handleInputKeyDown}
         {...rest}
       />
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            style={{
+              fontSize: "12px",
+              color: colors.danger300,
+              fontWeight: "600",
+            }}
+            initial={{ lineHeight: 0, opacity: 0, marginTop: 0 }}
+            animate={{ lineHeight: "12px", opacity: 1, marginTop: "10px" }}
+            exit={{ lineHeight: 0, opacity: 0, marginTop: 0 }}
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
       <div className="flex-row flex overflow-scroll">
         {tags.map((i) => (
           <div className="flex flex-row tag-wrapper">
@@ -61,6 +82,7 @@ const TagInput = forwardRef<InputRef, TagInputProps>((props, ref) => {
           </div>
         ))}
       </div>
+      
     </div>
   );
 });

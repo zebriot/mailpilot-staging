@@ -11,6 +11,10 @@ export interface UserConfig {
     description?: string;
   };
   emailAccounts?: LinkedEmailAccount[];
+  authDetails?: {
+    method?: "linked-in" | "web3";
+    id?: string;
+  };
 }
 
 export type LinkedEmailAccount = {

@@ -134,6 +134,52 @@
 }
 
 
+.button-container-delete-outline {
+    flex-direction: row;
+    display: flex;
+    align-self: baseline;
+    padding: 15px 25px;
+    height: 54px;
+    align-items: center;
+    justify-content: center;
+    transition: all 100ms;
+}
+
+.button-container-delete-outline.disabled {
+    cursor: not-allowed;
+    opacity: 0.30000001192092896;
+}
+
+.button-container-delete-outline:hover {
+    cursor: pointer;
+}
+
+.button-container-delete-outline:hover>.button-text-delete {
+    color: #d9372b;
+}
+
+.button-text-delete-outline {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 22px;
+    /* identical to box height */
+    transition: all 100ms;
+    display: flex;
+    align-items: center;
+
+    /* Gray modern / 500 */
+    transition: all 100ms;
+    color: #F04438;
+
+}
+
+.button-text-delete-outline:hover {
+    cursor: pointer;
+}
+
+
 .button-text-delete {
     font-family: 'Inter';
     font-style: normal;

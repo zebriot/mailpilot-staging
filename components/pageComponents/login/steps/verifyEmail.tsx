@@ -8,14 +8,14 @@ import Button from "../../../button";
 
 export const VerifyEmail = () => {
   const router = useRouter();
-  const { email , code} = router.query;
+  const { email, code } = router.query;
   const [emailJustSent, setEmailJustSent] = useState(true);
   const [sending, setSending] = useState(false);
   const [currentTimer, setCurrentTimer] = useState(60);
 
   useEffect(() => {
     if (emailJustSent) {
-      setTimeout(() => setCurrentTimer(currentTimer - 1),1000)
+      setTimeout(() => setCurrentTimer(currentTimer - 1), 1000);
     }
     if (currentTimer === 0) {
       setEmailJustSent(false);
@@ -23,13 +23,13 @@ export const VerifyEmail = () => {
   }, [currentTimer]);
 
   const resendEmail = async () => {
-    setSending(true)
+    setSending(true);
     const code = await sendSignInLink(email as string);
     Router.push({
       pathname: "/login",
       query: { step: LoginSteps.verifyEmail, email, code },
     });
-    setSending(false)
+    setSending(false);
     setCurrentTimer(60);
     setEmailJustSent(true);
   };
@@ -65,8 +65,11 @@ export const VerifyEmail = () => {
       </div>
       <p className="text-light">
         Didn’t receive an email?{" "}
-        <p style={{ color: emailJustSent  ? colors.lightGrey :colors.primary }} onClick={resendEmail}>
-          Resend {emailJustSent && (currentTimer)}
+        <p
+          style={{ color: emailJustSent ? colors.lightGrey : colors.primary }}
+          onClick={resendEmail}
+        >
+          Resend {emailJustSent && currentTimer}
         </p>
       </p>
     </>

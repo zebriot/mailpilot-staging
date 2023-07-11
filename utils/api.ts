@@ -1,7 +1,8 @@
 import axios from "axios";
 import { EmailConfig } from "../redux/slices/steps";
 
-const BASE_URL = "https://mailpilot-staging-ij6b.vercel.app";
+const BASE_URL = "http://100.25.215.69:3001"; // LIVE AWS
+// const BASE_URL = "http://192.168.29.216:3001"; // DEV;
 
 export const sendSignInLink = async (email: string) => {
   try {
@@ -26,9 +27,6 @@ export const sendEmail = async ({
 }) => {
   try {
     console.log("sendEmail  : emailConfig", emailConfig);
-    console.log("sendEmail  : toAddress", toAddress);
-    console.log("sendEmail  : email", email);
-    console.log("sendEmail  : subject", subject);
     const res = await axios.post(BASE_URL + "/send-email", {
       host: emailConfig.host,
       port: emailConfig.port,
@@ -45,6 +43,19 @@ export const sendEmail = async ({
     });
     return res;
   } catch (err) {
+    return undefined;
+  }
+};
+
+export const authenticateLinkedInCode = async (code: string) => {
+  try {
+    const res = await axios.post(BASE_URL + "/authenticate-linkedin", {
+      code,
+    });
+
+    return res.data;
+  } catch (err) {
+    console.log("LINKED IN AUTH FAILED : ");
     return undefined;
   }
 };

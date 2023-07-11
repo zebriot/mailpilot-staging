@@ -56,17 +56,7 @@ export interface StepType {
 }
 
 const initialState: StepType = {
-  user: {
-    email: "",
-    name: "",
-    jobTitle: "",
-    description: [],
-    photoUrl: "",
-    company: {
-      name: "",
-      description: "",
-    },
-  },
+  user: {},
   csv: {
     parseData: [],
     rows: [],
@@ -97,8 +87,10 @@ const stepSlice = createSlice({
   name: "stepState",
   initialState,
   reducers: {
-    setUserDetails: (state, action: { payload: UserConfig; type: string }) => {
-      state.user = action.payload;
+    setUserDetails: (state, action: { payload: UserConfig }) => {
+      console.log("ACTION>PAYLOAD 1", action.payload);
+      state.user = { ...action.payload };
+      console.log("ACTION>PAYLOAD 2", action.payload);
     },
     setCSV: (state, action: { payload: CSVDetails; type: string }) => {
       state.csv = { ...action.payload };
