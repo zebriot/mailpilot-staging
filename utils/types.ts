@@ -15,7 +15,7 @@ export interface UserConfig {
     method?: "linked-in" | "web3";
     id?: string;
   };
-  savedSignatures: { title: string , content:string}[];
+  savedSignatures?: { title: string , content:string}[];
 }
 
 export type LinkedEmailAccount = {
