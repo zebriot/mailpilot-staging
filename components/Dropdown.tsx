@@ -10,7 +10,7 @@ export const DropDown = forwardRef<any, StateManagerProps>((props, ref) => {
     <Select
       ref={ref}
       unstyled
-      menuPortalTarget={document.body}
+      menuPortalTarget={typeof window !== "undefined" && document.body}
       menuPosition={"fixed"}
       styles={{
         control: (baseStyles, state) => ({
