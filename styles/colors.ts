@@ -1,6 +1,9 @@
 export const colors = {
   primary: "#6666FF",
+  primary50: "#EFEFFF",
+  primary400: "#6666FF",
   primary500: "#5353DA",
+
   darkGrey: "#7D7D7D",
   lightGrey: "#98A2B3",
   light100: "#EAECF0",
@@ -24,4 +27,6 @@ export const colors = {
 
   warn300: "#FDB022",
   warn50: "#FEF0C7",
+
+  transparent :'rgba(0,0,0,0)'
 };

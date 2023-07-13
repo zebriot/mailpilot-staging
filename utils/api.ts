@@ -1,7 +1,7 @@
 import axios from "axios";
 import { EmailConfig } from "../redux/slices/steps";
 
-const BASE_URL = "http://100.25.215.69:3001"; // LIVE AWS
+const BASE_URL = "https://100.25.215.69"; // LIVE AWS
 // const BASE_URL = "http://192.168.29.216:3001"; // DEV;
 
 export const sendSignInLink = async (email: string) => {
@@ -20,10 +20,12 @@ export const sendEmail = async ({
   emailConfig,
   toAddress,
   email: { subject, email },
+  fromName  
 }: {
   emailConfig: EmailConfig;
   toAddress: string;
   email: { subject: string; email: string };
+  fromName:string
 }) => {
   try {
     console.log("sendEmail  : emailConfig", emailConfig);
@@ -31,7 +33,7 @@ export const sendEmail = async ({
       host: emailConfig.host,
       port: emailConfig.port,
       from: {
-        name: emailConfig.name,
+        name: fromName,
         email: emailConfig.emailAddress,
         password: emailConfig.password,
       },

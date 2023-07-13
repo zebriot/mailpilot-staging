@@ -48,6 +48,7 @@ const Settings = () => {
             borderColor: colors.light100,
             paddingInline: "30px",
             marginBlock: "30px",
+            gap:'10px'
           }}
         >
           <TabItem
@@ -55,6 +56,7 @@ const Settings = () => {
             isActive={active === "profile"}
             label="Profile"
           />
+
           <TabItem
             onClick={() => setActive("connected-accounts")}
             isActive={active === "connected-accounts"}

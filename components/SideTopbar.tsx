@@ -93,12 +93,7 @@ const SideTopbar = ({ children }) => {
     setToggleCollapse(!toggleCollapse);
   };
 
-  console.log("ACTIVE MENU ID ", activeMenu);
 
-  if (!activeMenu?.id)
-    return (
-      <div className="h-full w-screen flex-row flex flex-1">{children}</div>
-    );
   useEffect(() => {
     window.addEventListener("keydown", function (e) {
       if ((e.ctrlKey || e.metaKey) && e.key === "f") {
@@ -113,6 +108,11 @@ const SideTopbar = ({ children }) => {
       }
     });
   }, []);
+
+  if (!activeMenu?.id)
+    return (
+      <div className="h-full w-screen flex-row flex flex-1">{children}</div>
+    );
 
   return (
     <div className="h-full w-screen flex-row flex flex-1">

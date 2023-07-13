@@ -45,7 +45,7 @@ const Input = forwardRef<InputRef, InputProps>((props, ref) => {
       <input
         ref={inputRef}
         className={`input-default ${error && "invalid"} mt-1 ` + className}
-        style={{ height: "52px", ...style }}
+        style={{ height: "52px", zIndex: 2, ...style }}
         {...rest}
       />
       <AnimatePresence>
@@ -55,6 +55,7 @@ const Input = forwardRef<InputRef, InputProps>((props, ref) => {
               fontSize: "12px",
               color: colors.danger300,
               fontWeight: "600",
+              zIndex: 1,
             }}
             initial={{ lineHeight: 0, opacity: 0, marginTop: 0 }}
             animate={{ lineHeight: "12px", opacity: 1, marginTop: "10px" }}

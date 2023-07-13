@@ -24,7 +24,7 @@ const data = [
 
 export const ConnectedAccounts = () => {
   return (
-    <div className="basic-border-outline mt-5 gap-5">
+    <div className="basic-border-outline mt-5 gap-5 flex-col">
       {data.map((i) => (
         <div className="flex flex-row justify-between">
           <div className="flex-row flex">

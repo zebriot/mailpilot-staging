@@ -26,6 +26,7 @@
     "filepond-plugin-image-preview": "4.6.10",
     "firebase": "9.22.0",
     "formidable": "2.0.1",
+    "formik": "^2.4.2",
     "framer-motion": "10.12.18",
     "fs": "0.0.1-security",
     "install": "0.13.0",

@@ -597,7 +597,6 @@ div.toolbar button {
 .basic-border-outline {
   display: flex;
   padding: 30px;
-  flex-direction: column;
   border-radius: 20px;
   border: 1px solid var(--base-light-200, #D0D5DD);
 }

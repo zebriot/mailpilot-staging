@@ -17,6 +17,7 @@ import { colors } from "../../../../styles";
 import { updateEmailSetting, validateEmail } from "../../../../utils";
 import { useProcessor } from "../../../../utils/processorProvider";
 import { index } from "cheerio/lib/api/traversing";
+import DropDown from "../../../Dropdown";
 
 const columns = [
   {
@@ -293,7 +294,7 @@ export const Step3 = () => {
               </div>
               <img src="/svg/arrow-right.svg" className=" h-9 w-9" />
               <div className="flex flex-1 flex-col items-end">
-                <Select
+                <DropDown
                   isMulti
                   ref={(el) => {
                     selectRefs.current[index] = el;
@@ -305,58 +306,9 @@ export const Step3 = () => {
                     };
                   })}
                   unstyled
-                  // defaultValue={{
-                  //   label: getDefaultSelectValueFromIndex(index),
-                  //   value: getDefaultSelectValueFromIndex(index),
-                  // }}
                   isClearable
-                  // onChange={(e) => {if(selectRefs.current[2].getValue()?.length ===) e.values[0]} }
                   menuPortalTarget={document.body}
                   menuPosition={"fixed"}
-                  styles={{
-                    control: (baseStyles, state) => ({
-                      ...baseStyles,
-                      borderColor: state.isFocused ? colors.primary : "red",
-                    }),
-                    container: (baseStyles, state) => ({
-                      ...baseStyles,
-                      borderColor: state.isFocused
-                        ? colors.primary
-                        : colors.light200,
-                      borderWidth: "1px",
-                      borderRadius: "12px",
-                      backgroundColor: colors.neutral100,
-                      height: 17 + 14 + 14,
-                      paddingInline: 20,
-                      alignItems: "center",
-                      display: "flex",
-                    }),
-                    valueContainer: (baseStyles, state) => ({
-                      ...baseStyles,
-                      height: 26,
-                    }),
-                    menuPortal: (base, props) => ({
-                      ...base,
-                      position: "absolute",
-                      // offset: 10,
-                    }),
-                    menuList: (base, props) => ({
-                      ...base,
-                      width: "290px",
-                    }),
-                    option: (base, props) => ({
-                      ...base,
-                      backgroundColor: colors.neutral100,
-                      borderBottomWidth: "0.5px",
-                      borderRightWidth: "0.5px",
-
-                      borderLeftWidth: "0.5px",
-                      bordeColor: colors.light200,
-                      paddingInline: "10px",
-                      paddingBlock: "5px",
-                      width: "290px",
-                    }),
-                  }}
                   placeholder="Choose Coloumn"
                   classNamePrefix="home_custom-select"
                   hideSelectedOptions
@@ -681,7 +633,7 @@ export const Step3 = () => {
                           backgroundColor: colors.light200,
                         }}
                       >
-                        <img src="/svg/plus-white.svg" className="h-6 w-6" />
+                        <img src="/svg/plus.svg" className="h-6 w-6" />
                       </div>
                       <div className="flex-col flex">
                         <p

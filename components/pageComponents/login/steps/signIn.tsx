@@ -26,7 +26,7 @@ export const SignIn = () => {
   const googleProvider = new firebase.auth.GoogleAuthProvider();
   googleProvider.setCustomParameters({ prompt: "select_account" });
   const router = useRouter();
-  const {startLoader, stopLoader} = useLoader()
+  const { startLoader, stopLoader } = useLoader();
   const dispatch = useAppDispatch();
   const { code } = router.query;
   useEffect(() => {
@@ -41,7 +41,7 @@ export const SignIn = () => {
   const [isEmailSiginLoading, setEmailSiginLoading] = useState(false);
 
   const handleLinkedInCode = async (code: string) => {
-    startLoader()
+    startLoader();
     const res = await authenticateLinkedInCode(code);
     dispatch(
       setUserDetails({
@@ -55,8 +55,7 @@ export const SignIn = () => {
     //   name: res?.name,
     //   photoUrl: res?.photoUrl,
     // });
-    signInWithCustomToken(auth, res?.customToken);
-    stopLoader()
+    signInWithCustomToken(auth, res?.customToken).then(() => stopLoader());
   };
 
   const handleEmailChange = (e) => {

@@ -139,6 +139,7 @@ export const Step5 = () => {
       emailConfig: selectedEmailConfig,
       email: res,
       toAddress: emailArr[0],
+      fromName: user.name || user.company.name,
     });
     if (resSend) {
       addToast({
