@@ -1,5 +1,6 @@
 import axios from "axios";
 import { EmailConfig } from "../redux/slices/steps";
+export const APP_URL ='https://mailpilot-staging.vercel.app/'
 
 const BASE_URL = "https://mailpilot.ai"; // LIVE AWS
 // const BASE_URL = "http://192.168.29.216:3001"; // DEV;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../../styles";
 import {
+  APP_URL,
   UserConfig,
   authenticateLinkedInCode,
   sendSignInLink,
@@ -64,7 +65,7 @@ export const SignIn = () => {
 
   const { linkedInLogin } = useLinkedIn({
     clientId: "77j7yef5b36hsc",
-    redirectUri: `http://localhost:3000/login`, // for Next.js, you can use `${typeof window === 'object' && window.location.origin}/linkedin`
+    redirectUri: `${APP_URL}/login`, // for Next.js, you can use `${typeof window === 'object' && window.location.origin}/linkedin`
     onSuccess: (code) => {
       console.log("useLinkedIn", code);
     },
