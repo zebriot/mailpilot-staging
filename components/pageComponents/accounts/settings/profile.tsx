@@ -4,16 +4,27 @@ import Button from "../../../button";
 import { EditProfileModal } from "./editProfileModal";
 import { colors } from "../../../../styles";
 import DropDown from "../../../Dropdown";
-import { Editor, EditorState, RichUtils, convertFromHTML } from "draft-js";
+import {
+  ContentState,
+  EditorState,
+  RichUtils,
+  convertFromHTML,
+  convertToRaw,
+} from "draft-js";
 import {
   convertHTMLtoEditorState,
   debounce,
   updateUser,
   useToast,
 } from "../../../../utils";
-import { stateToHTML } from "draft-js-export-html";
 import { AnimatePresence, motion } from "framer-motion";
 import { CancelDone } from "./partials/CancelDone";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
+
+let lastTimeoutId;
 
 export const Profile = () => {
   const user = useAppSelector((s) => s.state.user);
@@ -48,10 +59,19 @@ export const Profile = () => {
 
 const EmailSignatures = () => {
   const savedSignatures = useAppSelector((s) => s.state.user.signatures);
+  const signatureDefaults = useAppSelector(
+    (s) => s.state.user.signatureDefaults
+  );
   const [selected, setSelected] = useState<number | undefined>(0); // using undefined if the new signature ceration is in progress
   const [editing, setEditing] = useState<number | undefined>(undefined);
   const [deleting, setDeleting] = useState<number | undefined>(undefined);
   const [signatures, setSignatures] = useState(savedSignatures || []);
+  const [sigDefaults, setSigDefaults] = useState(
+    signatureDefaults || {
+      forNewEmails: "",
+      forForwards: "",
+    }
+  );
   const [editorState, setEditorState] = useState(
     convertHTMLtoEditorState(savedSignatures?.[0]?.content || "")
   );
@@ -68,12 +88,21 @@ const EmailSignatures = () => {
   const { addToast } = useToast();
 
   const updateSignaturesToDatabase = async () => {
-    // await updateUser({ signatures });
-    addToast({
-      appearance: "success",
-      title: "Saved",
-      message: "Your Signature config was saved successfully",
-    });
+    clearTimeout(lastTimeoutId);
+    const timeoutId = setTimeout(async () => {
+      await updateUser({ signatures });
+      lastTimeoutId &&
+        addToast({
+          appearance: "success",
+          title: "Saved",
+          message: "Your Signature config was saved successfully",
+        });
+    }, 3500);
+    lastTimeoutId = timeoutId;
+  };
+
+  const updateSigDefaultsToDb = async () => {
+    await updateUser({ signatureDefaults: sigDefaults });
   };
 
   const deleteSignature = () => {
@@ -87,7 +116,7 @@ const EmailSignatures = () => {
         message: sigToDelete.title + " was saved successfully deleted.",
       });
     });
-    setSelected(0)
+    setSelected(0);
     setDeleting(undefined);
   };
 
@@ -100,7 +129,7 @@ const EmailSignatures = () => {
       });
       return;
     }
-    if (!stateToHTML(newSigState.editorState.getCurrentContent())) {
+    if (!newSigState.editorState.getCurrentContent()) {
       addToast({
         appearance: "error",
         title: "Disabled",
@@ -112,7 +141,9 @@ const EmailSignatures = () => {
       ...signatures,
       {
         title: newSigState.title,
-        content: stateToHTML(newSigState.editorState.getCurrentContent()),
+        content: draftToHtml(
+          convertToRaw(newSigState.editorState.getCurrentContent())
+        ),
       },
     ];
     setSignatures(updatedSigs);
@@ -131,15 +162,6 @@ const EmailSignatures = () => {
     });
   };
 
-  // Editing Related Functions
-  const onStyleClick = (e) => {
-    setEditorState(RichUtils.toggleInlineStyle(editorState, e.target.id));
-  };
-
-  const addLinkClick = () => {
-    console.log(editorState.getSelection());
-  };
-
   const handleSigTitleChange = (index: number, value: string) => {
     const temp = [...signatures];
     temp[index] = { ...temp[index], title: value };
@@ -153,9 +175,8 @@ const EmailSignatures = () => {
       const temp = [...signatures];
       temp[selected] = {
         ...temp[selected],
-        content: stateToHTML(e.getCurrentContent()),
+        content: draftToHtml(convertToRaw(e.getCurrentContent())),
       };
-      console.log("SIGNATURE", stateToHTML(e.getCurrentContent()));
       setSignatures(temp);
     } else {
       setNewSigState((prev) => ({ ...prev, editorState: e }));
@@ -181,7 +202,13 @@ const EmailSignatures = () => {
       setEditorState(newSigState.editorState);
     }
     if (selected !== undefined && signatures) {
-      setEditorState(convertHTMLtoEditorState(signatures[selected]?.content));
+      setEditorState(
+        EditorState.createWithContent(
+          ContentState.createFromBlockArray(
+            htmlToDraft(signatures[selected]?.content)
+          )
+        )
+      );
     }
   }, [selected]);
 
@@ -191,7 +218,12 @@ const EmailSignatures = () => {
 
   useEffect(() => {
     updateSignaturesToDatabase();
-  }, []);
+    console.log("SAVING TO DATABASE", JSON.stringify(signatures));
+  }, [JSON.stringify(signatures)]);
+
+  useEffect(() => {
+    updateSigDefaultsToDb();
+  }, [sigDefaults]);
 
   return (
     <>
@@ -217,6 +249,7 @@ const EmailSignatures = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   setSelected(index);
+                  setNewSignature(false);
                   setDeleting(undefined);
                 }}
                 className="p-5 transition-all cursor-pointer duration-200 flex flex-row justify-between parent__internal-div-visible"
@@ -276,6 +309,7 @@ const EmailSignatures = () => {
                       e.stopPropagation();
                       setSelected(index);
                       setEditing(index);
+                      setNewSignature(false);
                     }}
                     className="h-4 w-4 mr-1"
                     src="/svg/edit-white.svg"
@@ -287,6 +321,7 @@ const EmailSignatures = () => {
                       e.stopPropagation();
                       setSelected(index);
                       setDeleting(index);
+                      setNewSignature(false);
                     }}
                   />
                 </div>
@@ -312,7 +347,7 @@ const EmailSignatures = () => {
                   // onChange={handleNewSigTitleChange}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      editorRef.current.focus();
+                      editorRef.current.focusEditor();
                     }
                   }}
                   maxLength={30}
@@ -366,7 +401,6 @@ const EmailSignatures = () => {
                 }}
                 onRightPress={addNewSignature}
                 rightDisabled={!(newSigState.title && isNewNameValid())}
-              
               />
             ) : (
               <>
@@ -391,14 +425,24 @@ const EmailSignatures = () => {
           </div>
         </div>
         <div className="flex flex-1 flex-col">
-          <div className="flexbox flex-row my-0 flex-1 flex-shrink flex-grow basis-0">
+          <div className="flexbox flex-row my-0 flex-1 flex-shrink flex-grow basis-0 relative ">
             <Editor
               editorState={editorState}
-              onChange={handleEditorStateChange}
+              onEditorStateChange={handleEditorStateChange}
               ref={editorRef}
+              toolbarClassName="order-2 bottom-0 absolute "
+              wrapperStyle={{ paddingBottom: "80px" }}
+              toolbarStyle={{
+                marginTop: 0,
+                borderWidth: 0,
+                borderTopWidth: "1px",
+                padding: "10px",
+                height: "75px",
+                borderColor: colors.light200,
+              }}
             />
           </div>
-          <div
+          {/* <div
             className="items-center flex flex-row px-7"
             style={{
               height: "60px",
@@ -428,7 +472,7 @@ const EmailSignatures = () => {
               className="w-5 h-5 cursor-pointer"
               onClick={addLinkClick}
             />
-          </div>
+          </div> */}
         </div>
       </div>
       <p className="h6" style={{ marginTop: "30px", marginBottom: "20px" }}>
@@ -440,9 +484,19 @@ const EmailSignatures = () => {
             For New Emails:
           </p>
           <DropDown
+            value={{
+              value: sigDefaults.forNewEmails,
+              label: sigDefaults.forNewEmails,
+            }}
+            onChange={(s: { label: string; value: string }) => {
+              setSigDefaults((prev) => ({
+                ...prev,
+                forNewEmails: s?.value as string,
+              }));
+            }}
             options={savedSignatures?.map((i) => {
               return {
-                value: i,
+                value: i.title,
                 label: i.title,
               };
             })}
@@ -453,12 +507,20 @@ const EmailSignatures = () => {
             For Replies/Forwards:
           </p>
           <DropDown
-            options={savedSignatures?.map((i) => {
-              return {
-                value: i,
-                label: i.title,
-              };
-            })}
+            value={{
+              value: sigDefaults.forForwards,
+              label: sigDefaults.forForwards,
+            }}
+            onChange={(s: { label: string; value: string }) => {
+              setSigDefaults((prev) => ({
+                ...prev,
+                forForwards: s?.value as string,
+              }));
+            }}
+            options={savedSignatures?.map((i) => ({
+              value: i.title,
+              label: i.title,
+            }))}
           />
         </div>
       </div>

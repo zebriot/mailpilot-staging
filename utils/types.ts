@@ -16,6 +16,10 @@ export interface UserConfig {
     id?: string;
   };
   signatures?: { title: string; content: string }[];
+  signatureDefaults?: {
+    forNewEmails?: string;
+    forForwards?: string;
+  };
 }
 
 export type LinkedEmailAccount = {

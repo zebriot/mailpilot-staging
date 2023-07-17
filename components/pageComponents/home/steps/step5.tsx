@@ -6,13 +6,6 @@ import {
   RichUtils,
   convertFromHTML,
 } from "draft-js";
-import "draft-js/dist/Draft.css";
-import Editor from "draft-js-plugins-editor";
-import createImagePlugin from "draft-js-image-plugin";
-
-const imagePlugin = createImagePlugin();
-const plugins = [imagePlugin];
-
 import Button from "../../../button";
 import { useAppDispatch, useAppSelector } from "../../../../redux/store";
 import {
@@ -31,7 +24,15 @@ import {
   validateEmail,
 } from "../../../../utils";
 import { useToast } from "../../../../utils/toastProvider";
-
+import dynamic from "next/dynamic";
+const Editor = dynamic(
+  () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
+  { ssr: false }
+);
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import draftToHtml from "draftjs-to-html";
+const htmlToDraft = typeof window === 'object' && require('html-to-draftjs').default;
+// import htmlToDraft from "html-to-draftjs";
 
 export const Step5 = () => {
   const dispatch = useAppDispatch();
@@ -51,7 +52,6 @@ export const Step5 = () => {
   const [currentlySending, setCurrentlySending] = useState<number | undefined>(
     undefined
   );
-  const editorRef = useRef<Editor>();
   const emails = useAppSelector((state) => state.state.emails);
   const user = useAppSelector((state) => state.state.user);
   const selectedEmailConfig = useAppSelector(
@@ -82,7 +82,6 @@ export const Step5 = () => {
   const addLinkClick = () => {
     console.log(editorState.getSelection());
   };
-
 
   const send = async () => {
     setCurrentlySending(index);
@@ -136,14 +135,22 @@ export const Step5 = () => {
 
   // handling index change
   useEffect(() => {
-    if (emails?.length > 0 && emails[index]?.email) {
+    if (
+      emails?.length > 0 &&
+      emails[index]?.email 
+    ) {
       const res = parseEmailFromOpenAI(emails[index]?.email);
       setSubject(res.subject);
-      setEditorState(convertHTMLtoEditorState(res.email));
+
+      setEditorState(
+        EditorState.createWithContent(
+          ContentState.createFromBlockArray(htmlToDraft(res.email))
+        )
+      );
     }
   }, [index, emails]);
 
-  const handlePastedFiles = (fileArr) => {};
+  if (typeof window === "undefined") return null;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -224,9 +231,7 @@ export const Step5 = () => {
         >
           <Editor
             editorState={editorState}
-            onChange={setEditorState}
-            plugins={plugins}
-            ref={editorRef}
+            onEditorStateChange={setEditorState}
           />
         </div>
         <div

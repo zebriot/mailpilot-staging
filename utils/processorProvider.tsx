@@ -28,6 +28,21 @@ export function ProcessorProvider({ children }) {
   );
   const [metadata, setMetadata] = useState({});
   const csv = useAppSelector((s) => s.state.csv);
+  const signatureDefaults = useAppSelector(
+    (s) => s.state.user.signatureDefaults
+  );
+  const signatures = useAppSelector((s) => s.state.user.signatures);
+
+  const getDefaultSignature = () => {
+    console.log("SIGNATURES : ", signatures);
+    console.log("signatureDefaults : ", signatureDefaults);
+    const filtered = signatures.filter(
+      (i) => i.title === signatureDefaults.forNewEmails
+    );
+    console.log("SIGNATURE TO BE ADDED : ", filtered);
+    return filtered?.[0]?.content || "";
+  };
+
   const dispatch = useDispatch();
 
   const increaseFailedCount = () => {
@@ -49,7 +64,7 @@ export function ProcessorProvider({ children }) {
   };
 
   const addEmail = (x: { email: string; metadata: any; data: any }) => {
-    dispatch(addToEmails({...x}));
+    dispatch(addToEmails({ ...x, email: x.email + getDefaultSignature() }));
   };
 
   const stopProcessing = () => {
