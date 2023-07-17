@@ -19,10 +19,14 @@ import {
 } from "../../../../utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { CancelDone } from "./partials/CancelDone";
-import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from "draftjs-to-html";
-import htmlToDraft from "html-to-draftjs";
+import dynamic from "next/dynamic";
+const Editor = dynamic(
+  () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
+  { ssr: false }
+);
+const htmlToDraft = typeof window === 'object' && require('html-to-draftjs').default;
+const draftToHtml = typeof window === 'object' && require('draftjs-to-html').default;
 
 let lastTimeoutId;
 
@@ -82,7 +86,6 @@ const EmailSignatures = () => {
   const [isNewSignature, setNewSignature] = useState(false);
 
   const newSigRef = useRef<HTMLInputElement>();
-  const editorRef = useRef<Editor>();
   const inputRefs = useRef<HTMLInputElement[]>([]);
 
   const { addToast } = useToast();
@@ -345,11 +348,11 @@ const EmailSignatures = () => {
                   style={{ backgroundColor: colors.transparent }}
                   value={newSigState.title}
                   // onChange={handleNewSigTitleChange}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      editorRef.current.focusEditor();
-                    }
-                  }}
+                  // onKeyDown={(e) => {
+                  //   if (e.key === "Enter") {
+                  //     editorRef.current.focusEditor();
+                  //   }
+                  // }}
                   maxLength={30}
                   onChange={(e) => {
                     setNewSigState((prev) => ({
@@ -429,7 +432,6 @@ const EmailSignatures = () => {
             <Editor
               editorState={editorState}
               onEditorStateChange={handleEditorStateChange}
-              ref={editorRef}
               toolbarClassName="order-2 bottom-0 absolute "
               wrapperStyle={{ paddingBottom: "80px" }}
               toolbarStyle={{

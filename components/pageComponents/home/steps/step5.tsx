@@ -29,9 +29,10 @@ const Editor = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
   { ssr: false }
 );
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from "draftjs-to-html";
 const htmlToDraft = typeof window === 'object' && require('html-to-draftjs').default;
+const draftToHtml = typeof window === 'object' && require('draftjs-to-html').default;
+
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 // import htmlToDraft from "html-to-draftjs";
 
 export const Step5 = () => {
