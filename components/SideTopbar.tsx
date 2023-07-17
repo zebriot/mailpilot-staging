@@ -93,7 +93,6 @@ const SideTopbar = ({ children }) => {
     setToggleCollapse(!toggleCollapse);
   };
 
-
   useEffect(() => {
     window.addEventListener("keydown", function (e) {
       if ((e.ctrlKey || e.metaKey) && e.key === "f") {
@@ -124,29 +123,20 @@ const SideTopbar = ({ children }) => {
           style={{ transition: "width 300ms cubic-bezier(0.2, 0, 0, 1) 0s" }}
         >
           <div className="flex flex-col">
-            <div className="flex items-center justify-between relative">
-              <div className="flex items-center pl-1 gap-4">
+            <div className="flex items-center justify-between relative ">
+              <div className="flex items-center pl-1 h-14 transition-all duration-500"style={{
+                            opacity: toggleCollapse ? 0 : 1}}>
                 <img
                   src="/svg/mail-pilot-logo.svg"
                   alt="Logo"
                   className="logo-default"
                 />
-                <span
-                  className={classNames("mt-2 text-lg font-medium text-text", {
-                    hidden: toggleCollapse,
-                  })}
-                >
-                  {/* <img
-                src="/svg/mail-pilot-logo.svg"
-                alt="Logo"
-                className="logo-default"
-              /> */}
-                </span>
               </div>
 
               <button
                 className={collapseIconClasses}
                 onClick={handleSidebarToggle}
+                
               >
                 {/* <CollapsIcon /> */}
                 <img
@@ -170,19 +160,21 @@ const SideTopbar = ({ children }) => {
                       onClick={() => router.push(menu.navigateTo)}
                     >
                       {/* <Link href={menu.link}> */}
-                      <div className="flex py-4 px-3 items-center w-full h-full">
+                      <div className="flex py-4 px-3 items-center w-full h-14">
                         <div style={{ width: "2.5rem" }}>
                           <img src={iconSrc} className="w-6 h-6" />
                         </div>
-                        {!toggleCollapse && (
-                          <span
-                            className={classNames(
-                              "text-md font-medium text-text-light"
-                            )}
-                          >
-                            {menu.label}
-                          </span>
-                        )}
+                        <span
+                          className={classNames(
+                            "font-medium text-text-light transition-all"
+                          )}
+                          style={{
+                            opacity: toggleCollapse ? 0 : 1,
+                            fontSize: toggleCollapse ? 0 : "16px",
+                          }}
+                        >
+                          {menu.label}
+                        </span>
                       </div>
                       {/* </Link> */}
                     </div>
@@ -223,24 +215,24 @@ const SideTopbar = ({ children }) => {
             }}
           >
             <div
-              className={`flex flex-row items-center mt-5 transition-all duration-500 ${
-                toggleCollapse ? "justify-center" : ""
-              }`}
+              className={`flex flex-row items-center mt-5 transition-all duration-500 `}
             >
               <img src="/svg/help-circle.svg" className="h-6 w-6 mr-2" />
-              {!toggleCollapse && (
-                <p
-                  style={{
-                    color: colors.dark100,
-                    textShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-                    fontSize: "14px",
-                    fontFamily: "Inter",
-                    fontWeight: "500",
-                  }}
-                >
-                  Help & Getting started
-                </p>
-              )}
+              {/* {!toggleCollapse && ( */}
+              <p
+                className={"transition-all duration-100"}
+                style={{
+                  color: colors.dark100,
+                  textShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                  fontSize: !toggleCollapse ? "14px" : 0,
+                  opacity: !toggleCollapse ? 1 : 0,
+                  fontFamily: "Inter",
+                  fontWeight: "500",
+                }}
+              >
+                Help & Getting started
+              </p>
+              {/* )} */}
             </div>
             {/* <div
               style={{

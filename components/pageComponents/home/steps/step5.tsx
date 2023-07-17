@@ -22,6 +22,9 @@ import {
 import { colors } from "../../../../styles";
 import {
   callDaVinci,
+  convertHTMLtoEditorState,
+  getCharCount,
+  getWordCount,
   parseEmailFromOpenAI,
   scrapeData,
   sendEmail,
@@ -29,28 +32,6 @@ import {
 } from "../../../../utils";
 import { useToast } from "../../../../utils/toastProvider";
 
-const convertHTMLtoEditorState = (html: string) => {
-  const blocksFromHTML = convertFromHTML(html);
-  const content = ContentState.createFromBlockArray(
-    blocksFromHTML.contentBlocks,
-    blocksFromHTML.entityMap
-  );
-  return EditorState.createWithContent(content);
-};
-
-const getWordCount = (state: EditorState) => {
-  const plainText = state.getCurrentContent().getPlainText("");
-  const regex = /(?:\r\n|\r|\n)/g; // new line, carriage return, line feed
-  const cleanString = plainText.replace(regex, " ").trim(); // replace above characters w/ space
-  const wordArray = cleanString.match(/\S+/g); // matches words according to whitespace
-  return wordArray ? wordArray.length : 0;
-};
-
-const getCharCount = (state: EditorState) => {
-  const plainText = state.getCurrentContent().getPlainText("");
-  const cleanString = plainText.replace(/\s/g, "").trim(); // replace above characters w/ space
-  return cleanString.length;
-};
 
 export const Step5 = () => {
   const dispatch = useAppDispatch();
@@ -102,19 +83,6 @@ export const Step5 = () => {
     console.log(editorState.getSelection());
   };
 
-  // as soon as on step-5, begin the email generation process if data is present
-  useEffect(() => {
-    if (csv.parseData?.length > 0) {
-      // scrapeData(
-      //   csv.labels.website,
-      //   csv.parseData,
-      //   setProgress,
-      //   setStatus,
-      //   setMetadata,
-      //   addEmail
-      // );
-    }
-  }, []);
 
   const send = async () => {
     setCurrentlySending(index);
@@ -181,7 +149,7 @@ export const Step5 = () => {
     <div className="flex flex-1 flex-col">
       <div className="home_mail-content-container mt-5 flex flex-1 flex-col">
         <div
-          className="border-bottom-light items-center  flex flex-row px-7 mt-1"
+          className="border-bottom-light items-center flex flex-row px-7 mt-1"
           style={{ width: "100%", paddingBlock: "12px" }}
         >
           <div className="flex flex-1 flex-row items-center">

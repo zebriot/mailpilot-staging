@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppSelector } from "../../../../redux/store";
 import Button from "../../../button";
 import { EditProfileModal } from "./editProfileModal";
 import { colors } from "../../../../styles";
 import DropDown from "../../../Dropdown";
-
-const testSignatures = [
-  { title: "Sight3 Sig", content: "" },
-  { title: "MailPilot Sig", content: "" },
-];
+import { Editor, EditorState, RichUtils, convertFromHTML } from "draft-js";
+import {
+  convertHTMLtoEditorState,
+  debounce,
+  updateUser,
+  useToast,
+} from "../../../../utils";
+import { stateToHTML } from "draft-js-export-html";
+import { AnimatePresence, motion } from "framer-motion";
+import { CancelDone } from "./partials/CancelDone";
 
 export const Profile = () => {
   const user = useAppSelector((s) => s.state.user);
@@ -42,7 +47,152 @@ export const Profile = () => {
 };
 
 const EmailSignatures = () => {
-  const [selected, setSelected] = useState(testSignatures[0]);
+  const savedSignatures = useAppSelector((s) => s.state.user.signatures);
+  const [selected, setSelected] = useState<number | undefined>(0); // using undefined if the new signature ceration is in progress
+  const [editing, setEditing] = useState<number | undefined>(undefined);
+  const [deleting, setDeleting] = useState<number | undefined>(undefined);
+  const [signatures, setSignatures] = useState(savedSignatures || []);
+  const [editorState, setEditorState] = useState(
+    convertHTMLtoEditorState(savedSignatures?.[0]?.content || "")
+  );
+  const [newSigState, setNewSigState] = useState({
+    editorState: convertHTMLtoEditorState(""),
+    title: "",
+  });
+  const [isNewSignature, setNewSignature] = useState(false);
+
+  const newSigRef = useRef<HTMLInputElement>();
+  const editorRef = useRef<Editor>();
+  const inputRefs = useRef<HTMLInputElement[]>([]);
+
+  const { addToast } = useToast();
+
+  const updateSignaturesToDatabase = async () => {
+    // await updateUser({ signatures });
+    addToast({
+      appearance: "success",
+      title: "Saved",
+      message: "Your Signature config was saved successfully",
+    });
+  };
+
+  const deleteSignature = () => {
+    const sigToDelete = signatures[deleting];
+    const updatedSigs = signatures.filter((i) => i.title !== sigToDelete.title);
+    setSignatures(updatedSigs);
+    updateUser({ signatures: updatedSigs }).then(() => {
+      addToast({
+        appearance: "success",
+        title: "Deleted " + sigToDelete.title,
+        message: sigToDelete.title + " was saved successfully deleted.",
+      });
+    });
+    setSelected(0)
+    setDeleting(undefined);
+  };
+
+  const addNewSignature = () => {
+    if (!newSigState.title || !isNewNameValid()) {
+      addToast({
+        appearance: "error",
+        title: "Disabled",
+        message: "Title Not Valid !",
+      });
+      return;
+    }
+    if (!stateToHTML(newSigState.editorState.getCurrentContent())) {
+      addToast({
+        appearance: "error",
+        title: "Disabled",
+        message: "Signature not Valid !",
+      });
+      return;
+    }
+    const updatedSigs = [
+      ...signatures,
+      {
+        title: newSigState.title,
+        content: stateToHTML(newSigState.editorState.getCurrentContent()),
+      },
+    ];
+    setSignatures(updatedSigs);
+    setSelected(updatedSigs.length - 1);
+    setNewSignature(false);
+
+    setNewSigState({ title: "", editorState: EditorState.createEmpty() });
+    updateUser({
+      signatures: updatedSigs,
+    }).then(() => {
+      addToast({
+        appearance: "success",
+        title: "Signature Created !",
+        message: "Your new signature was saved succesfully !",
+      });
+    });
+  };
+
+  // Editing Related Functions
+  const onStyleClick = (e) => {
+    setEditorState(RichUtils.toggleInlineStyle(editorState, e.target.id));
+  };
+
+  const addLinkClick = () => {
+    console.log(editorState.getSelection());
+  };
+
+  const handleSigTitleChange = (index: number, value: string) => {
+    const temp = [...signatures];
+    temp[index] = { ...temp[index], title: value };
+    setSignatures(temp);
+  };
+
+  const handleEditorStateChange = (e: EditorState) => {
+    setEditorState(e);
+
+    if (selected !== undefined) {
+      const temp = [...signatures];
+      temp[selected] = {
+        ...temp[selected],
+        content: stateToHTML(e.getCurrentContent()),
+      };
+      console.log("SIGNATURE", stateToHTML(e.getCurrentContent()));
+      setSignatures(temp);
+    } else {
+      setNewSigState((prev) => ({ ...prev, editorState: e }));
+    }
+  };
+
+  const isNewNameValid = () => {
+    const temp = signatures.map((i) => i.title === newSigState.title);
+    return !temp.includes(true);
+  };
+
+  // Use Effects
+  useEffect(() => {
+    if (isNewSignature) {
+      setEditorState(EditorState.createEmpty());
+      return;
+    }
+  }, [isNewSignature]);
+
+  useEffect(() => {
+    console.log(selected, signatures[selected]?.content);
+    if (selected === undefined) {
+      setEditorState(newSigState.editorState);
+    }
+    if (selected !== undefined && signatures) {
+      setEditorState(convertHTMLtoEditorState(signatures[selected]?.content));
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    isNewSignature && newSigRef.current && newSigRef.current.focus();
+  }, [isNewSignature, newSigRef.current]);
+
+  useEffect(() => {
+    updateSignaturesToDatabase();
+  }, []);
+
   return (
     <>
       <p className="h6" style={{ marginTop: "30px", marginBottom: "20px" }}>
@@ -60,42 +210,226 @@ const EmailSignatures = () => {
           }}
           className="flex flex-col"
         >
-          <div className="flex flex-col flex-1" style={{ width: "300px" }}>
-            {testSignatures.map((i, index) => (
+          <div className="flex flex-col flex-1 " style={{ width: "300px" }}>
+            {signatures.map((i, index) => (
               <div
-                onClick={() => setSelected(i)}
-                className=" p-5 transition-all cursor-pointer duration-200"
+                key={index}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelected(index);
+                  setDeleting(undefined);
+                }}
+                className="p-5 transition-all cursor-pointer duration-200 flex flex-row justify-between parent__internal-div-visible"
                 style={{
                   backgroundColor:
-                    selected.title === i.title
+                    index === deleting
+                      ? colors.danger50
+                      : selected === index
                       ? colors.primary50
                       : colors.transparent,
                   borderTopLeftRadius: index === 0 ? "20px" : 0,
                 }}
               >
-                <p
-                  className="body-text-l"
-                  style={{
-                    color:
-                      selected.title === i.title
-                        ? colors.primary400
-                        : colors.neutral900,
-                    fontWeight: selected.title === i.title ? 600 : 500,
-                  }}
-                >
-                  {i.title}
-                </p>
+                {editing === index ? (
+                  <input
+                    ref={(el) => (inputRefs.current[index] = el)}
+                    maxLength={30}
+                    autoFocus
+                    style={{
+                      backgroundColor: colors.transparent,
+                      fontWeight: 600,
+                      color: colors.primary400,
+                    }}
+                    onBlur={() => setEditing(undefined)}
+                    className="body-text-l outline-none transition-all duration-200"
+                    value={i.title}
+                    onChange={(e) =>
+                      handleSigTitleChange(index, e.target.value)
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        updateUser({ signatures });
+                        inputRefs.current[index].blur();
+                      }
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="body-text-l text-ellipsis overflow-hidden"
+                    style={{
+                      color:
+                        deleting === index
+                          ? colors.danger400
+                          : selected === index
+                          ? colors.primary400
+                          : colors.neutral900,
+                      fontWeight: selected === index ? 600 : 500,
+                      width: "210px",
+                    }}
+                  >
+                    {i.title}
+                  </p>
+                )}
+                <div key={index} className="flex flex-row">
+                  <img
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelected(index);
+                      setEditing(index);
+                    }}
+                    className="h-4 w-4 mr-1"
+                    src="/svg/edit-white.svg"
+                  />
+                  <img
+                    className="h-4 w-4 mr-1"
+                    src="/svg/trash.svg"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelected(index);
+                      setDeleting(index);
+                    }}
+                  />
+                </div>
               </div>
             ))}
+            {isNewSignature && (
+              <div
+                className="transition-all cursor-pointer duration-200 flex flex-col justify-between"
+                style={{
+                  backgroundColor: colors.primary50,
+                  borderTopLeftRadius: signatures.length === 0 ? "20px" : 0,
+                }}
+              >
+                <input
+                  onFocus={() => {
+                    setSelected(undefined);
+                  }}
+                  ref={newSigRef}
+                  placeholder="New Signature"
+                  className="body-text-l outline-none p-5 w-full"
+                  style={{ backgroundColor: colors.transparent }}
+                  value={newSigState.title}
+                  // onChange={handleNewSigTitleChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      editorRef.current.focus();
+                    }
+                  }}
+                  maxLength={30}
+                  onChange={(e) => {
+                    setNewSigState((prev) => ({
+                      ...prev,
+                      title: e.target.value,
+                    }));
+                  }}
+                />
+                <AnimatePresence>
+                  {!isNewNameValid() && (
+                    <motion.p
+                      initial={{ lineHeight: 0, opacity: 0, paddingBottom: 0 }}
+                      animate={{
+                        lineHeight: "18px",
+                        opacity: 1,
+                        paddingBottom: "8px",
+                      }}
+                      exit={{ lineHeight: 0, opacity: 0, paddingBottom: 0 }}
+                      className="body-text-m px-5 "
+                      style={{ color: colors.danger400 }}
+                    >
+                      Name Already Exists!
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
-          <div className="flex flex-row justify-center items-center p-3 cursor-pointer">
-            <img className="h-6 w-6 mr-1" src="/svg/plus-primary.svg" />
-            <p className="body-text-l" style={{ color: colors.primary }}>
-              New Signature
-            </p>
+          <div className="flex flex-row w-full justify-center items-center p-3 cursor-pointer">
+            {deleting !== undefined ? (
+              <CancelDone
+                onCancelPress={() => {
+                  setDeleting(undefined);
+                }}
+                onRightPress={deleteSignature}
+                rightDisabled={false}
+                rightColor={colors.danger400}
+                leftColor={colors.light300}
+                rightText="Delete"
+              />
+            ) : isNewSignature ? (
+              <CancelDone
+                onCancelPress={() => {
+                  setNewSigState({
+                    editorState: EditorState.createEmpty(),
+                    title: "",
+                  });
+                  setNewSignature(false);
+                }}
+                onRightPress={addNewSignature}
+                rightDisabled={!(newSigState.title && isNewNameValid())}
+              
+              />
+            ) : (
+              <>
+                <img className="h-6 w-6 mr-1" src="/svg/plus-primary.svg" />
+                <p
+                  className="body-text-l text-center"
+                  style={{
+                    color: colors.primary,
+                    display: "flex",
+                  }}
+                  onClick={() => {
+                    if (isNewSignature) return;
+                    setEditing(undefined);
+                    setSelected(undefined);
+                    setNewSignature(!isNewSignature);
+                  }}
+                >
+                  New Signature
+                </p>
+              </>
+            )}
           </div>
         </div>
-        <div className="flex flex-1 bg-black"></div>
+        <div className="flex flex-1 flex-col">
+          <div className="flexbox flex-row my-0 flex-1 flex-shrink flex-grow basis-0">
+            <Editor
+              editorState={editorState}
+              onChange={handleEditorStateChange}
+              ref={editorRef}
+            />
+          </div>
+          <div
+            className="items-center flex flex-row px-7"
+            style={{
+              height: "60px",
+              marginTop: 0,
+              borderTopWidth: "1px",
+              borderColor: colors.light200,
+            }}
+          >
+            <img src="/svg/eye.svg" className="w-4 h-4 cursor-pointer" />
+            <img src="/svg/vertical-line.svg" className="w-1 h-7 mx-4 " />
+            <img
+              src="/svg/bold.svg"
+              onClick={onStyleClick}
+              className="w-6 h-6 cursor-pointer"
+              id="BOLD"
+            />
+            <img
+              src="/svg/italic.svg"
+              onClick={onStyleClick}
+              className="w-6 h-6 mx-4 cursor-pointer"
+              id="ITALIC"
+            />
+            <img src="/svg/font.svg" className="w-5 h-5 cursor-pointer" />
+            <img src="/svg/vertical-line.svg" className="w-1 h-7 mx-4" />
+            <img
+              src="/svg/link-2.svg"
+              className="w-5 h-5 cursor-pointer"
+              onClick={addLinkClick}
+            />
+          </div>
+        </div>
       </div>
       <p className="h6" style={{ marginTop: "30px", marginBottom: "20px" }}>
         Signature Defaults
@@ -106,7 +440,7 @@ const EmailSignatures = () => {
             For New Emails:
           </p>
           <DropDown
-            options={testSignatures.map((i) => {
+            options={savedSignatures?.map((i) => {
               return {
                 value: i,
                 label: i.title,
@@ -119,7 +453,7 @@ const EmailSignatures = () => {
             For Replies/Forwards:
           </p>
           <DropDown
-            options={testSignatures.map((i) => {
+            options={savedSignatures?.map((i) => {
               return {
                 value: i,
                 label: i.title,

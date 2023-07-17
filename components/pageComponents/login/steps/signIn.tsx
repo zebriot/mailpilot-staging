@@ -56,7 +56,7 @@ export const SignIn = () => {
     //   name: res?.name,
     //   photoUrl: res?.photoUrl,
     // });
-    signInWithCustomToken(auth, res?.customToken).then(() => stopLoader());
+    signInWithCustomToken(auth, res?.customToken);
   };
 
   const handleEmailChange = (e) => {
@@ -95,8 +95,10 @@ export const SignIn = () => {
   };
 
   useEffect(() => {
+    
     // Confirm the link is a sign-in with email link.
     if (isSignInWithEmailLink(auth, window.location.href)) {
+      startLoader()
       // Additional state parameters can also be passed via URL.
       // This can be used to continue the user's intended action before triggering
       // the sign-in operation.
@@ -228,19 +230,21 @@ export const SignIn = () => {
         <p className="text-light">
           By creating an account, you agree to MailPilot’s
           <br />
-          <p style={{ color: colors.primary, fontWeight: "600" }}>
+          <span style={{ color: colors.primary, fontWeight: "600" }}>
             Terms of Services
-          </p>{" "}
+          </span>{" "}
           and{" "}
-          <p style={{ color: colors.primary, fontWeight: "600" }}>
+          <span style={{ color: colors.primary, fontWeight: "600" }}>
             Privacy Policy
-          </p>
+          </span>
           .
         </p>
       </div>
       <p className="text-light">
         Can’t access your account?{" "}
-        <p style={{ color: colors.primary, fontWeight: "600" }}>Get Help</p>
+        <span style={{ color: colors.primary, fontWeight: "600" }}>
+          Get Help
+        </span>
       </p>
     </>
   );

@@ -65,12 +65,11 @@ export const updateUser = async (userDetails: UserConfig) => {
   console.log("USER DOC : ", docSnap.data());
   // dispatch(setUserDetails({ ...userDetails }));
   try {
-    await setDoc(doc(firestoreDB, "users", uid), userDetails);
-    syncUser()
+    await updateDoc(doc(firestoreDB, "users", uid), { ...userDetails });
+    syncUser();
   } catch (err) {
     console.log("updateUserConfig ERR : ", err);
   }
-
 };
 
 export const updateUserConfig = async (config: UserConfig, uid: string) => {

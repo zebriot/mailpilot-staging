@@ -1,16 +1,16 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-@import url('../components/styles/modal.module.css');
-@import url('../components/styles/taginput.module.css');
-@import url('../components/styles/button.css');
-@import url('../components/styles/toast.css');
-@import url('../styles/sidebar.css');
-@import url('../styles/home.css');
-@import url('../styles/login.module.css');
-@import url('../styles/configure.css');
-@import url('../styles/accounts.css');
-@import url('../styles/toast.css');
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import url("../components/styles/modal.module.css");
+@import url("../components/styles/taginput.module.css");
+@import url("../components/styles/button.css");
+@import url("../components/styles/toast.css");
+@import url("../styles/sidebar.css");
+@import url("../styles/home.css");
+@import url("../styles/login.module.css");
+@import url("../styles/configure.css");
+@import url("../styles/accounts.css");
+@import url("../styles/toast.css");
 
 html,
 
@@ -28,12 +28,12 @@ body {
   scrollbar-width: none;
   padding: 0;
   margin: 0;
-  font-family: 'Inter';
+  font-family: "Inter";
   line-height: 1.6;
   font-size: 16px;
-  display: 'flexbox';
+  display: "flexbox";
   height: 100vh;
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
   flex: 1;
   display: flex;
 }
@@ -54,7 +54,6 @@ body {
   font-weight: 500;
   line-height: normal;
   letter-spacing: -0.16px;
-
 }
 
 .body-text-m {
@@ -64,7 +63,6 @@ body {
   font-weight: 500;
   line-height: normal;
   letter-spacing: -0.14px;
-
 }
 
 .h3 {
@@ -84,7 +82,6 @@ body {
   font-weight: 600;
   line-height: normal;
   letter-spacing: -0.24px;
-
 }
 
 .h6 {
@@ -246,7 +243,7 @@ img {
 }
 
 #cbx:after {
-  content: '';
+  content: "";
   position: absolute;
   top: 2px;
   left: 8px;
@@ -365,11 +362,10 @@ img {
   width: 60%;
 }
 
-
 .main-container {
   display: flex;
   height: 100vh;
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
   width: 100%;
 }
 
@@ -392,11 +388,11 @@ img {
   height: 52px;
 
   /* Base/White */
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
 
   /* Gray/300 */
-  border: 1px solid #D0D5DD;
+  border: 1px solid #d0d5dd;
 }
 
 .input-default:focus {
@@ -409,11 +405,11 @@ img {
 .input-default.invalid {
   outline: none;
   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.3);
-  border-color: red
+  border-color: red;
 }
 
 .text-light {
-  color: #7D7D7D;
+  color: #7d7d7d;
   font-size: 16px;
   font-weight: 500;
   text-align: center;
@@ -424,13 +420,11 @@ img {
   cursor: pointer;
 }
 
-
 .phone-input-container {
   display: flex;
   flex-direction: row;
   width: 100%;
   margin-bottom: 1rem;
-
 }
 
 .phone-input-input {
@@ -449,7 +443,7 @@ img {
 }
 
 .header-2 {
-  font-family: 'Inter';
+  font-family: "Inter";
   font-style: normal;
   font-weight: 600;
   font-size: 24px;
@@ -474,7 +468,7 @@ img {
 }
 
 .descriptive-2 {
-  font-family: 'Inter';
+  font-family: "Inter";
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
@@ -483,13 +477,12 @@ img {
   display: flex;
   align-items: center;
   /* Gray/400 */
-  color: #98A2B3;
+  color: #98a2b3;
 }
 
 .rotate-180 {
   transform: rotate(180deg);
 }
-
 
 /* Styling the Rich Text Editor  */
 
@@ -499,6 +492,7 @@ div.DraftEditor-root {
   padding: 30px;
   font-size: 18px;
   margin: 0px;
+  z-index: 10;
   flex-grow: 0;
 }
 
@@ -518,6 +512,7 @@ div.DraftEditor-editorContainer {
   line-height: normal;
   letter-spacing: -0.18px;
   flex-grow: 0;
+  z-index: 10;
 }
 
 div.public-DraftEditor-content {
@@ -527,6 +522,7 @@ div.public-DraftEditor-content {
   overflow-x: scroll;
   /* overflow: scroll; */
   flex-grow: 0;
+  z-index: 10;
 }
 
 @keyframes spinner {
@@ -553,13 +549,12 @@ div.public-DraftEditor-content {
   position: relative;
 }
 
-
 .loading-spinner-red {
   width: 20px;
   height: 20px;
   border: 10px solid #fff;
   /* Light grey */
-  border-top: 10px solid #F04438;
+  border-top: 10px solid #f04438;
   border-radius: 50%;
   animation: spinner 1.5s linear infinite;
   justify-content: center;
@@ -574,7 +569,6 @@ div.public-DraftEditor-content {
   background-color: solid #66f;
   border-radius: 50%;
 } */
-
 
 div.toolbar {
   position: relative;
@@ -598,5 +592,29 @@ div.toolbar button {
   display: flex;
   padding: 30px;
   border-radius: 20px;
-  border: 1px solid var(--base-light-200, #D0D5DD);
+  border: 1px solid var(--base-light-200, #d0d5dd);
+}
+
+.parent-full-flex {
+  flex: 1;
+  display: flex;
+  overflow: auto;
+}
+
+.content-full-flex {
+  min-height: -webkit-min-content;
+  display: flex;
+}
+
+
+.parent__internal-div-visible {
+
+}
+
+.parent__internal-div-visible>div {
+  visibility: hidden;
+}
+
+.parent__internal-div-visible:hover>div {
+  visibility: visible;
 }

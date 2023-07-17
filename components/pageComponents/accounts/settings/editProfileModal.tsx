@@ -53,11 +53,13 @@ export const EditProfileModal = ({
               e.stopPropagation();
               setOpen(false);
             }}
-            style={{ zIndex: 99999 }}
+            style={{ zIndex: 99 }}
           >
             <div
               className="home_select-emial-modal-content-container relative z-30 p-10"
               onClick={(e) => e.stopPropagation()}
+              style={{ zIndex: 99 }}
+
             >
               <Formik
                 initialValues={user}
