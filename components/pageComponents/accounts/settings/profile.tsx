@@ -25,8 +25,8 @@ const Editor = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
   { ssr: false }
 );
-const htmlToDraft = typeof window === 'object' && require('html-to-draftjs').default;
-const draftToHtml = typeof window === 'object' && require('draftjs-to-html').default;
+const htmlToDraft = typeof window !== 'undefined' && require('html-to-draftjs').default;
+import draftToHtml from 'draftjs-to-html'
 
 let lastTimeoutId;
 
@@ -174,7 +174,7 @@ const EmailSignatures = () => {
   const handleEditorStateChange = (e: EditorState) => {
     setEditorState(e);
 
-    if (selected !== undefined) {
+    if (selected !== undefined && typeof window !== 'undefined') {
       const temp = [...signatures];
       temp[selected] = {
         ...temp[selected],
@@ -204,7 +204,7 @@ const EmailSignatures = () => {
     if (selected === undefined) {
       setEditorState(newSigState.editorState);
     }
-    if (selected !== undefined && signatures) {
+    if (selected !== undefined && signatures && typeof window !== 'undefined') {
       setEditorState(
         EditorState.createWithContent(
           ContentState.createFromBlockArray(
@@ -227,6 +227,8 @@ const EmailSignatures = () => {
   useEffect(() => {
     updateSigDefaultsToDb();
   }, [sigDefaults]);
+
+  if( typeof window === 'undefined') return null
 
   return (
     <>
