@@ -40,7 +40,7 @@ export const EditProfileModal = ({
   };
 
   return (
-    <ReactModal isOpen={open} className="z-20">
+    <ReactModal portalClassName="z-50" isOpen={open} className=" z-50">
       <AnimatePresence>
         {open && (
           <motion.div
@@ -48,7 +48,7 @@ export const EditProfileModal = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="home_select-email-modal-container z-20"
+            className="home_select-email-modal-container absolute"
             onClick={(e) => {
               e.stopPropagation();
               setOpen(false);
@@ -56,10 +56,9 @@ export const EditProfileModal = ({
             style={{ zIndex: 99 }}
           >
             <div
-              className="home_select-emial-modal-content-container relative z-30 p-10"
+              className="home_select-emial-modal-content-container  p-10"
               onClick={(e) => e.stopPropagation()}
-              style={{ zIndex: 99 }}
-
+              style={{ zIndex: 99999999 }}
             >
               <Formik
                 initialValues={user}
@@ -81,14 +80,13 @@ export const EditProfileModal = ({
                     };
                   }
                   if (!values.company.name) {
-                    if(errors?.company){
+                    if (errors?.company) {
                       errors.company.name = "Required";
-                    }else{
+                    } else {
                       errors = {
                         ...errors,
                         company: {
-                          name:
-                          "Required"
+                          name: "Required",
                         },
                       };
                     }

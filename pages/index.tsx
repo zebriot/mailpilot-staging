@@ -1,6 +1,6 @@
-import LoginScreen from "./login";
+import LandingPage from "../LandingPage";
 
-export default LoginScreen
+export default LandingPage
 
 
 

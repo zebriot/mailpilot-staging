@@ -26,9 +26,11 @@ export const StepIndicator = ({
             // return <div className={getStepClass(i.variant)}></div>;
             return (
               <div
-                className="step blinking"
+                className={`step ${
+                  currentStep === index + 1 ? "blinking" : ""
+                }`}
                 style={{
-                  backgroundColor: getStepBackground(index+1, currentStep),
+                  backgroundColor: getStepBackground(index + 1, currentStep),
                 }}
               ></div>
             );

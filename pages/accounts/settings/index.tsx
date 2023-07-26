@@ -40,7 +40,7 @@ const Settings = () => {
     <div className="flex flex-1 flex-col p-5 k">
       <p className="header-1 mb-5">Account Settings</p>
 
-      <div className="home_mail-content-container relative flex-row">
+      <div className="settings_content-container relative flex-row">
         <div
           className="flex flex-col"
           style={{

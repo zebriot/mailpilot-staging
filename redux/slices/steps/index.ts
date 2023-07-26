@@ -29,8 +29,13 @@ interface CSVDetails {
   labels: MappedLabels;
   file: any;
 }
-interface Email {
-  email: string;
+
+export interface Email {
+  subject: string;
+  content: string;
+}
+export interface EmailObject {
+  email: Email;
   metadata: any;
   data: any;
 }
@@ -42,7 +47,7 @@ export interface EmailConfig extends LinkedEmailAccount {
 export interface StepType {
   user: UserConfig;
   csv: CSVDetails;
-  emails: Array<Email>;
+  emails: Array<EmailObject>;
   addEmailState: {
     currentStep: { type: EmailProvider; step: number };
   };
@@ -95,20 +100,26 @@ const stepSlice = createSlice({
     setCSV: (state, action: { payload: CSVDetails; type: string }) => {
       state.csv = { ...action.payload };
     },
-    updateEmails: (state, action: { payload: Array<Email>; type: string }) => {
-      state.emails = [...action.payload];
-    },
-    addToEmails: (state, action: { payload: Email; type: string }) => {
+    // updateEmails: (state, action: { payload: Array<Email>; type: string }) => {
+    //   state.emails = [...action.payload];
+    // },
+    addToEmails: (state, action: { payload: EmailObject; type: string }) => {
       state.emails = [...state.emails, { ...action.payload }];
     },
     updateEmailAtIndex: (
       state,
-      action: { payload: { email: string; index: number }; type: string }
+      action: {
+        payload: {
+          email: { subject?: string; content?: string };
+          index: number;
+        };
+        type: string;
+      }
     ) => {
       const temp = [...state.emails];
       temp[action.payload.index] = {
         ...temp[action.payload.index],
-        email: action.payload.email,
+        email: { ...temp[action.payload.index].email, ...action.payload.email },
       };
       state.emails = [...temp];
     },
@@ -189,7 +200,7 @@ export const {
   setCSV,
   mapColumns,
   setUserDetails,
-  updateEmails,
+  // updateEmails,
   addToEmails,
   setStatus,
   setMetadata,

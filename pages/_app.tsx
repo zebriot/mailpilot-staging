@@ -2,6 +2,7 @@ import "../styles/global.css";
 import Router, { useRouter } from "next/router";
 import { Provider } from "react-redux";
 import store from "../redux/store";
+import Head from "next/head";
 
 import { useEffect } from "react";
 import { firebaseConfig, syncUser } from "../utils";
@@ -34,7 +35,13 @@ const MailPilot = ({ Component, pageProps }) => {
 
   useEffect(() => {
     auth.onAuthStateChanged(async function (user) {
+      if (router.route === "/") {
+        stopLoader();
+
+        return;
+      }
       startLoader();
+
       if (lastTimeoutId) clearTimeout(lastTimeoutId);
       const id = setTimeout(async () => {
         console.log("INSIDE TIMEOUT  : ", router.route, user);
@@ -56,7 +63,7 @@ const MailPilot = ({ Component, pageProps }) => {
             }
           }
         } else {
-          if (router.route !== "/login" && router.route !== "/") {
+          if (router.route !== "/login") {
             router.push("/login");
           }
         }
@@ -65,17 +72,23 @@ const MailPilot = ({ Component, pageProps }) => {
       lastTimeoutId = id;
     });
   }, []);
+
   return (
-    <Provider store={store}>
-      <ToastProvider>
-        <ProcessorProvider>
-          <main className="main-container">
-            <SideTopbar>
-              <Component {...pageProps} />
-            </SideTopbar>
-          </main>
-        </ProcessorProvider>
-      </ToastProvider>
-    </Provider>
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Provider store={store}>
+        <ToastProvider>
+          <ProcessorProvider>
+            <main className="main-container">
+              <SideTopbar>
+                <Component {...pageProps} />
+              </SideTopbar>
+            </main>
+          </ProcessorProvider>
+        </ToastProvider>
+      </Provider>
+    </>
   );
 };

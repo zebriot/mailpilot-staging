@@ -54,7 +54,7 @@ export const Toast = ({
           <p className="toast-message">{message}</p>
         </div>
         <img
-          src="svg/x-light.svg"
+          src="/svg/x-light.svg"
           className=" cursor-pointer"
           onClick={dismiss}
         />

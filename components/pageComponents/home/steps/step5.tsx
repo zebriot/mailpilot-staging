@@ -5,6 +5,7 @@ import {
   EditorState,
   RichUtils,
   convertFromHTML,
+  convertToRaw,
 } from "draft-js";
 import Button from "../../../button";
 import { useAppDispatch, useAppSelector } from "../../../../redux/store";
@@ -29,8 +30,11 @@ const Editor = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
   { ssr: false }
 );
-const htmlToDraft = typeof window === 'object' && require('html-to-draftjs').default;
-const draftToHtml = typeof window === 'object' && require('draftjs-to-html').default;
+const htmlToDraft =
+  typeof window === "object" && require("html-to-draftjs").default;
+// const draftToHtml =
+//   typeof window === "object" && require("draftjs-to-html").default;
+import draftToHtml from 'draftjs-to-html'
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 // import htmlToDraft from "html-to-draftjs";
@@ -64,7 +68,13 @@ export const Step5 = () => {
   const regenerateEmailAtIndex = async () => {
     setCurrentlyRegenerating(index);
     const email = await callDaVinci(user, emails[index].metadata);
-    dispatch(updateEmailAtIndex({ email, index }));
+    const res = parseEmailFromOpenAI(email);
+    dispatch(
+      updateEmailAtIndex({
+        email: res,
+        index,
+      })
+    );
     setCurrentlyRegenerating(undefined);
     addToast({
       appearance: "success",
@@ -98,14 +108,14 @@ export const Step5 = () => {
         }`,
       });
       setCurrentlySending(undefined);
-
       return;
     }
-    const res = parseEmailFromOpenAI(emails[index]?.email);
-
     const resSend = await sendEmail({
       emailConfig: selectedEmailConfig,
-      email: res,
+      email: {
+        email: emails[index]?.email.content,
+        subject: emails[index]?.email.subject,
+      },
       toAddress: emailArr[0],
       fromName: user.name || user.company.name,
     });
@@ -131,25 +141,57 @@ export const Step5 = () => {
     navigator.clipboard.writeText(
       editorState.getCurrentContent().getPlainText("")
     );
+    
     setTimeout(() => setCopiedIndex(undefined), 3000);
   };
 
   // handling index change
   useEffect(() => {
-    if (
-      emails?.length > 0 &&
-      emails[index]?.email 
-    ) {
-      const res = parseEmailFromOpenAI(emails[index]?.email);
-      setSubject(res.subject);
+    if (emails?.length > 0 && emails[index]?.email) {
+      // const res = parseEmailFromOpenAI(emails[index]?.email);
+      setSubject(emails[index]?.email.subject);
 
       setEditorState(
         EditorState.createWithContent(
-          ContentState.createFromBlockArray(htmlToDraft(res.email))
+          ContentState.createFromBlockArray(
+            htmlToDraft(emails[index]?.email.content)
+          )
         )
       );
     }
-  }, [index, emails]);
+  }, [index]);
+
+  const onSubjectChange = (val:string) => {
+    setSubject(val)
+    dispatch(
+      updateEmailAtIndex({
+        email: {
+          subject:val,
+        },
+        index,
+      })
+    );
+  };
+
+  const onEditorStateChange = (e) => {
+    setEditorState(e);
+    if (index !== undefined && typeof window !== "undefined") {
+      dispatch(
+        updateEmailAtIndex({
+          email: {
+            content: draftToHtml(convertToRaw(e.getCurrentContent())),
+          },
+          index,
+        })
+      );
+      // const temp = [...email];
+      // temp[index] = {
+      //   ...temp[index],
+      //   content: ,
+      // };
+      // setSignatures(temp);
+    }
+  };
 
   if (typeof window === "undefined") return null;
 
@@ -170,12 +212,13 @@ export const Step5 = () => {
               }}
             >
               Subject:{" "}
-              <p
-                className="ml-2"
+              <input
+                className="ml-2 outline-none"
                 style={{ color: colors.blackLogo, fontWeight: "600" }}
+                onChange={e => onSubjectChange(e.target.value)}
+                value={subject}
               >
-                {subject}
-              </p>
+              </input>
             </p>
             <img
               className="h-6 w-6 mr-2"
@@ -232,7 +275,7 @@ export const Step5 = () => {
         >
           <Editor
             editorState={editorState}
-            onEditorStateChange={setEditorState}
+            onEditorStateChange={onEditorStateChange}
           />
         </div>
         <div

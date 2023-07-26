@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import * as loadingJson from "../public/lottie/loading.json";
 import Lottie from "react-lottie";
+import { useRouter } from "next/router";
 
 const LoaderContext = React.createContext({
   startLoader: () => {},
@@ -18,6 +19,7 @@ const defaultOptions = {
 };
 
 export function LoaderProvider({ children }) {
+  const router = useRouter()
   const [loading, setLoading] = useState(true);
   const startLoader = () => {
     console.log("START LOADING");
@@ -37,7 +39,7 @@ export function LoaderProvider({ children }) {
     <LoaderContext.Provider value={value}>
       {children}
       <AnimatePresence>
-        {loading && (
+        {loading &&router.pathname !== '/'&& (
           <motion.div
             transition={{ duration: 0.2 }}
             initial={{ opacity: 0 }}

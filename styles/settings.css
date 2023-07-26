@@ -1,0 +1,15 @@
+.settings_content-container {
+    display: flex;
+    background-color: #FFFFFF;
+    height: 100%;
+    border-radius: 30px;
+    gap: 10px;
+    height: calc(100vh - 265px);
+}
+
+.account__settings__toolbar {
+    position: fixed;
+    top: calc(100vh - 260px);
+    background-color: #FFFFFF;
+    display: flex;
+}

@@ -6,16 +6,22 @@ import {
   EmailProvider,
   setAddEmailProcessType,
 } from "../../redux/slices/steps";
-import { getUser, syncUser } from "../../utils";
+import { LinkedEmailAccount, getUser, syncUser } from "../../utils";
 import { useLoader } from "../../utils/providers";
 import { useToasts } from "react-toast-notifications";
 import { useToast } from "../../utils/toastProvider";
+import { Menu, MenuItem } from "@szhsin/react-menu";
+import { EditAccountModal } from "../../components/pageComponents/accounts/partials/editAccount";
+import { DeleteAccountModal } from "../../components/pageComponents/accounts/partials/deleteAccount";
 
 const LinkedAccounts = () => {
   const { addToast } = useToast();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { startLoader, stopLoader } = useLoader();
+  const [selectedAccount, setSelectedAccount] = useState<LinkedEmailAccount>();
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
 
   const linkedEmails = useAppSelector((s) => s.state.user.emailAccounts);
   // linkedEmails.length === 0 && startLoader();
@@ -94,23 +100,72 @@ const LinkedAccounts = () => {
                 {i.emailAddress}
               </p>
               <div className="flex flex-row">
-                <img
-                  src="/svg/flame-gray.svg"
-                  className="h-6 w-6 mr-5 cursor-pointer"
-                />
-                <img
-                  src="/svg/settings-gray.svg"
-                  className="h-6 w-6 mr-5 cursor-pointer"
-                />
-                <img
-                  src="/svg/more-gray.svg"
-                  className="h-6 w-6 cursor-pointer"
-                />
+                <Menu
+                  menuClassName={"home_email-options-menu-container"}
+                  menuStyle={{ width: "80px" }}
+                  menuButton={
+                    <img
+                      onClick={(e) => e.stopPropagation()}
+                      src="/svg/more-gray.svg"
+                      className="h-6 w-6  cursor-pointer"
+                    />
+                  }
+                >
+                  <MenuItem
+                    className="flex flex-row items-center mb-1 cursor-pointer outline-none"
+                    onClick={(e) => {
+                      e.syntheticEvent.stopPropagation();
+                      setSelectedAccount(i);
+                      setEditModalOpen(true);
+                    }}
+                  >
+                    <img src="/svg/edit-white.svg" className="h-5 w-5 mr-1" />
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        letterSpacing: "-0.12px",
+                      }}
+                    >
+                      Edit
+                    </p>
+                  </MenuItem>
+                  <MenuItem
+                    className="flex flex-row items-center cursor-pointer outline-none"
+                    onClick={(e) => {
+                      e.syntheticEvent.stopPropagation();
+                      setSelectedAccount(i);
+                      setDeleteModalOpen(true);
+                    }}
+                  >
+                    <img src="/svg/trash.svg" className="h-5 w-5 mr-1" />
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        letterSpacing: "-0.12px",
+                      }}
+                    >
+                      Delete
+                    </p>
+                  </MenuItem>
+                </Menu>
               </div>
             </div>
           ))}
         </div>
       )}
+      <EditAccountModal
+        account={selectedAccount}
+        setOpen={setEditModalOpen}
+        open={editModalOpen}
+      />
+       <DeleteAccountModal
+        account={selectedAccount}
+        setOpen={setDeleteModalOpen}
+        open={deleteModalOpen}
+      />
+      
     </div>
   );
 };

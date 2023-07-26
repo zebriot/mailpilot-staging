@@ -5,7 +5,7 @@ import Lottie from "react-lottie";
 import { scrapeData } from "./generateMails";
 import { useAppSelector } from "../redux/store";
 import { useDispatch } from "react-redux";
-import { EmailConfig, addToEmails } from "../redux/slices/steps";
+import { Email, EmailConfig, addToEmails } from "../redux/slices/steps";
 
 const ProcessorContext = React.createContext({
   startProcessing: () => {},
@@ -63,8 +63,17 @@ export function ProcessorProvider({ children }) {
     );
   };
 
-  const addEmail = (x: { email: string; metadata: any; data: any }) => {
-    dispatch(addToEmails({ ...x, email: x.email + getDefaultSignature() }));
+  const addEmail = (x: { email: Email; metadata: any; data: any }) => {
+    // Adding default signature to the email content
+    dispatch(
+      addToEmails({
+        ...x,
+        email: {
+          content: x.email.content + getDefaultSignature(),
+          subject: x.email.subject,
+        },
+      })
+    );
   };
 
   const stopProcessing = () => {

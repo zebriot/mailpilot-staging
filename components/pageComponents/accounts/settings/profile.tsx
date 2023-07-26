@@ -25,8 +25,9 @@ const Editor = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
   { ssr: false }
 );
-const htmlToDraft = typeof window !== 'undefined' && require('html-to-draftjs').default;
-import draftToHtml from 'draftjs-to-html'
+const htmlToDraft =
+  typeof window !== "undefined" && require("html-to-draftjs").default;
+import draftToHtml from "draftjs-to-html";
 
 let lastTimeoutId;
 
@@ -174,7 +175,7 @@ const EmailSignatures = () => {
   const handleEditorStateChange = (e: EditorState) => {
     setEditorState(e);
 
-    if (selected !== undefined && typeof window !== 'undefined') {
+    if (selected !== undefined && typeof window !== "undefined") {
       const temp = [...signatures];
       temp[selected] = {
         ...temp[selected],
@@ -191,6 +192,63 @@ const EmailSignatures = () => {
     return !temp.includes(true);
   };
 
+  // Editing Related Functions
+  const onStyleClick = (e) => {
+    setEditorState(RichUtils.toggleInlineStyle(editorState, e.target.id));
+  };
+
+  const addLinkClick = () => {
+    console.log(editorState.getSelection());
+  };
+
+  const handleLinkClick = () => {
+    const url = prompt("Enter a URL:");
+    const contentState = editorState.getCurrentContent();
+    const contentStateWithEntity = contentState.createEntity(
+      "LINK",
+      "MUTABLE",
+      { url }
+    );
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const newEditorState = EditorState.set(editorState, {
+      currentContent: contentStateWithEntity,
+    });
+    setEditorState(
+      RichUtils.toggleLink(
+        newEditorState,
+        newEditorState.getSelection(),
+        entityKey
+      )
+    );
+  };
+
+  const handleFontSizeChange = (event) => {
+    const fontSize = event.target.value;
+    const newEditorState = RichUtils.toggleInlineStyle(
+      editorState,
+      `FONT_SIZE_${fontSize}`
+    );
+    setEditorState(newEditorState);
+  };
+
+  const handleFontTypeChange = (event) => {
+    const fontType = event.target.value;
+    const newEditorState = RichUtils.toggleInlineStyle(
+      editorState,
+      `FONT_FAMILY_${fontType}`
+    );
+    setEditorState(newEditorState);
+  };
+
+  const handleLineSpacingChange = (event) => {
+    const lineSpacing = event.target.value;
+    const newEditorState = RichUtils.toggleInlineStyle(
+      editorState,
+      `LINE_SPACING_${lineSpacing}`
+    );
+    setEditorState(newEditorState);
+  };
+
   // Use Effects
   useEffect(() => {
     if (isNewSignature) {
@@ -204,11 +262,11 @@ const EmailSignatures = () => {
     if (selected === undefined) {
       setEditorState(newSigState.editorState);
     }
-    if (selected !== undefined && signatures && typeof window !== 'undefined') {
+    if (selected !== undefined && signatures && typeof window !== "undefined") {
       setEditorState(
         EditorState.createWithContent(
           ContentState.createFromBlockArray(
-            htmlToDraft(signatures[selected]?.content)
+            htmlToDraft(signatures[selected]?.content || "")
           )
         )
       );
@@ -228,7 +286,7 @@ const EmailSignatures = () => {
     updateSigDefaultsToDb();
   }, [sigDefaults]);
 
-  if( typeof window === 'undefined') return null
+  if (typeof window === "undefined") return null;
 
   return (
     <>
@@ -247,7 +305,10 @@ const EmailSignatures = () => {
           }}
           className="flex flex-col"
         >
-          <div className="flex flex-col flex-1 " style={{ width: "300px" }}>
+          <div
+            className="flex flex-col flex-1 overflow-auto"
+            style={{ width: "300px" }}
+          >
             {signatures.map((i, index) => (
               <div
                 key={index}
@@ -349,12 +410,6 @@ const EmailSignatures = () => {
                   className="body-text-l outline-none p-5 w-full"
                   style={{ backgroundColor: colors.transparent }}
                   value={newSigState.title}
-                  // onChange={handleNewSigTitleChange}
-                  // onKeyDown={(e) => {
-                  //   if (e.key === "Enter") {
-                  //     editorRef.current.focusEditor();
-                  //   }
-                  // }}
                   maxLength={30}
                   onChange={(e) => {
                     setNewSigState((prev) => ({
@@ -429,24 +484,29 @@ const EmailSignatures = () => {
             )}
           </div>
         </div>
-        <div className="flex flex-1 flex-col">
-          <div className="flexbox flex-row my-0 flex-1 flex-shrink flex-grow basis-0 relative ">
+        <div className="flex flex-1 flex-col ">
+          <div className="flex-box flex-row my-0 flex-1 flex-shrink flex-grow overflow-auto z-1 relative">
             <Editor
               editorState={editorState}
               onEditorStateChange={handleEditorStateChange}
-              toolbarClassName="order-2 bottom-0 absolute "
-              wrapperStyle={{ paddingBottom: "80px" }}
-              toolbarStyle={{
-                marginTop: 0,
-                borderWidth: 0,
-                borderTopWidth: "1px",
-                padding: "10px",
-                height: "75px",
-                borderColor: colors.light200,
-              }}
+              toolbarClassName="account__settings__toolbar"
+              wrapperStyle={{ height: "100%", padding: 0 }}
+              editorStyle={{ padding: 0 , zIndex:0 }}
+              editorClassName="p-0 m-0"
+              // wrapperClassName=" relative"
+              toolbarHidden
+
+              // toolbarStyle={{
+              //   borderWidth: 0,
+              //   borderTopWidth: "1px",
+              //   padding: "10px",
+              //   height: "75px",
+              //   backgroundColor: colors.neutral100,
+              //   borderColor: colors.light200,
+              // }}
             />
           </div>
-          {/* <div
+          <div
             className="items-center flex flex-row px-7"
             style={{
               height: "60px",
@@ -474,9 +534,33 @@ const EmailSignatures = () => {
             <img
               src="/svg/link-2.svg"
               className="w-5 h-5 cursor-pointer"
-              onClick={addLinkClick}
+              onClick={handleLinkClick}
             />
-          </div> */}
+            <img src="/svg/vertical-line.svg" className="w-1 h-7 mx-4" />
+
+            <select onChange={handleFontSizeChange}>
+              <option value="">Font Size</option>
+              <option value="SMALL">Small</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LARGE">Large</option>
+            </select>
+            <img src="/svg/vertical-line.svg" className="w-1 h-7 mx-4" />
+
+            <select onChange={handleFontTypeChange}>
+              <option value="">Font Type</option>
+              <option value="ARIAL">Arial</option>
+              {/* <option value="TIMES_NEW_ROMAN">Times New Roman</option> */}
+              <option value="VERDANA">Verdana</option>
+            </select>
+            <img src="/svg/vertical-line.svg" className="w-1 h-7 mx-4" />
+
+            <select onChange={handleLineSpacingChange}>
+              <option value="">Line Spacing</option>
+              <option value="SINGLE">Single</option>
+              <option value="1_5">1.5</option>
+              <option value="DOUBLE">Double</option>
+            </select>
+          </div>
         </div>
       </div>
       <p className="h6" style={{ marginTop: "30px", marginBottom: "20px" }}>

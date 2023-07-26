@@ -182,7 +182,7 @@
   /* Custom control styles */
   width: 290px;
   margin-right: 2px;
-  
+
 }
 
 .home_custom-select__menu {
@@ -255,33 +255,38 @@
   transform: rotate(-2deg);
 }
 
-@keyframes step {
+
+@keyframes blink {
+
   0% {
-    opacity: 0;
+    background-color: #6666FF;
   }
 
   50% {
-    opacity: 1;
+    background-color: #6666FF;
   }
 
   100% {
-    opacity: 0;
+    background-color: rgba(102, 102, 255, 0.5);
+
   }
 }
 
 .step {
+
   width: 58px;
   height: 10px;
 
   /* Purple */
   margin-right: 20px;
 
-  background: #6666FF;
   border-radius: 40px;
 }
 
 .step.blinking {
-  animation: blink 2s;
+  animation: blink 1s;
+  animation-delay: 0s;
+  animation-iteration-count: 6;
 }
 
 .home_select-email-modal-container {

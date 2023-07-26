@@ -2,6 +2,7 @@ import axios from "axios";
 import { load } from "cheerio";
 import store, { RootState } from "../redux/store";
 import { Configuration, OpenAIApi } from "openai";
+import { Email } from "../redux/slices/steps";
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -97,7 +98,7 @@ export const scrapeData = async (
   setProgress: (n: number) => void,
   setStatus: (s: string) => void,
   setMetadata: (a: any) => void,
-  addToEmails: (a: { email: string; metadata: any; data: any }) => void,
+  addToEmails: (a: { email: Email; metadata: any; data: any }) => void,
   increaseFailedCount: () => void
 ) => {
   const user = store.getState().state.user;
@@ -117,7 +118,12 @@ export const scrapeData = async (
     if (resMetadata !== undefined) {
       setStatus("Generating Email for " + url);
       const email = await callDaVinci(user, resMetadata);
-      addToEmails({ email, metadata: resMetadata, data: data?.[i] });
+      const res = parseEmailFromOpenAI(email);
+      addToEmails({
+        email: res,
+        metadata: resMetadata,
+        data: data?.[i],
+      });
     } else {
       increaseFailedCount();
     }
@@ -141,7 +147,7 @@ export const callDaVinci = async (user: any, receiver: any) => {
     title: user?.jobTitle,
     organisationDescription: user?.company?.description,
   };
-  const prompt = `Write an Email. The purpose is Outreach emails, the sender name is ${sender.name}, ${sender.title} at ${sender.organisation}, the sender organization is ${sender.organisation}, the receiver organization is ${receiver?.url}, and the additional info is ${sender.organisation} is a ${sender.organisationDescription} and the receiver's org has to do something with ${receiver?.description} \nThe subject should be wrapped around <h1> tag \nThe response should be a properly formatted wrapped in <p> tags as such in HTML, make sure its not just text.\n Please use sender organization, receiver organization and additional info while crafting the email to achieve personalization and the greeting should not exceed 40 characters and the subject should be on the top and do not include the signature`;
+  const prompt = `Write an Email. The purpose is Outreach emails, the sender name is ${sender.name}, ${sender.title} at ${sender.organisation}, the sender organization is ${sender.organisation}, the receiver organization is ${receiver?.url}, and the additional info is ${sender.organisation} is a ${sender.organisationDescription} and the receiver's org has to do something with ${receiver?.description} \nThe subject should be wrapped around <h1> tag \nThe response should be a properly formatted wrapped in <p> tags as such in HTML, make sure its not just text.\n Please use sender organization, receiver organization and additional info while crafting the email to achieve personalization and the greeting should not exceed 40 characters and the subject should be on the top. Wrap the bottom signature in <h2> tag`;
   console.log("PROMPT : ", prompt);
   const resp = await openai.createCompletion({
     model: "text-davinci-003",
@@ -158,17 +164,15 @@ export const callDaVinci = async (user: any, receiver: any) => {
 
 export function parseEmailFromOpenAI(text: string) {
   const temp = text.split("</h1>");
-  console.log("parseEmailFromOpenAI TEMP : temp");
-  const email = temp[temp.length - 1];
+  let email = temp[temp.length - 1];
+  // over prompt we mentioned that the signature should be wrapped in h2 tag
+  let signature = email.match("<h2>(.*)</h2>")?.[1];
   var subject = text
-    .match("<h1>(.*)</h1>")[1]
+    .match("<h1>(.*)</h1>")?.[1]
     .replace("<h1>", "")
     .replace("</h1>", "");
-
-  console.log("parseEmailFromOpenAI SUBJECT : ", subject);
-  console.log("parseEmailFromOpenAI email : ", email);
   return {
-    email,
+    content: email.replace(signature, ""),
     subject,
   };
 }

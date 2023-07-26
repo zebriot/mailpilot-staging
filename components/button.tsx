@@ -13,31 +13,44 @@ export interface ButtonProps {
   onPress?: () => void;
   loading?: boolean;
   disabled?: boolean;
+  cursor?: boolean;
 }
 
-const getStylesForVariant = (preset: ButtonPresets, disabled: boolean) => {
+const getStylesForVariant = (
+  preset: ButtonPresets,
+  disabled: boolean,
+  cursor: boolean
+) => {
   switch (preset) {
     case "primary":
       return {
-        container: `button-container-primary ${disabled && "disabled"}`,
+        container: `button-container-primary ${disabled && "disabled"} ${
+          !cursor && "hover:cursor-none"
+        }`,
         icon: "button-icon-primary",
         title: "button-text-primary",
       };
     case "secondary":
       return {
-        container: `button-container-secondary ${disabled && "disabled"}`,
+        container: `button-container-secondary ${disabled && "disabled"} ${
+          !cursor && "hover:cursor-none"
+        }`,
         icon: "button-icon-secondary",
         title: "button-text-secondary",
       };
     case "delete":
       return {
-        container: `button-container-delete ${disabled && "disabled"}`,
+        container: `button-container-delete ${disabled && "disabled"} ${
+          !cursor && "hover:cursor-none"
+        }`,
         icon: "button-icon-delete",
         title: "button-text-delete",
       };
     case "delete-outline":
       return {
-        container: `button-container-delete-outline ${disabled && "disabled"}`,
+        container: `button-container-delete-outline ${disabled && "disabled"} ${
+          !cursor && "hover:cursor-none"
+        }`,
         icon: "button-icon-delete-outline",
         title: "button-text-delete-outline",
       };
@@ -55,8 +68,9 @@ export const Button = ({
   onPress,
   loading = false,
   disabled = false,
+  cursor = true,
 }: ButtonProps) => {
-  const classes = getStylesForVariant(preset, disabled);
+  const classes = getStylesForVariant(preset, disabled, cursor);
 
   return (
     <div
@@ -82,6 +96,7 @@ export const Button = ({
         <>
           {iconSrc && iconPosition === "left" && (
             <img
+
               className={classes.icon}
               src={iconSrc}
               style={{ color: "#FFF", marginRight: "5px", ...iconStyle }}

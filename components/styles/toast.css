@@ -4,8 +4,9 @@
 align-items: center;
 padding: 15px;
 border-width: 2px;
-/* width :500px; */
+min-width :500px;
 margin-top: 10px;
+
 }
 
 .toast-title {

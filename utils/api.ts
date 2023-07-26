@@ -1,8 +1,8 @@
 import axios from "axios";
 import { EmailConfig } from "../redux/slices/steps";
-export const APP_URL ='http://localhost:3000'
+export const APP_URL = "http://mailpilot.ai";
 
-const BASE_URL = "https://mailpilot.ai"; // LIVE AWS
+const BASE_URL = "https://api.mailpilot.ai"; // LIVE AWS
 // const BASE_URL = "http://192.168.29.216:3001"; // DEV;
 
 export const sendSignInLink = async (email: string) => {
@@ -21,12 +21,12 @@ export const sendEmail = async ({
   emailConfig,
   toAddress,
   email: { subject, email },
-  fromName  
+  fromName,
 }: {
   emailConfig: EmailConfig;
   toAddress: string;
   email: { subject: string; email: string };
-  fromName:string
+  fromName: string;
 }) => {
   try {
     console.log("sendEmail  : emailConfig", emailConfig);

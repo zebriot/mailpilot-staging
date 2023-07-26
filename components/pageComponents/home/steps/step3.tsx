@@ -1,22 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ReactModal from "react-modal";
-import Select from "react-select";
 import Router from "next/router";
 import { Menu, MenuItem } from "@szhsin/react-menu";
 
 import Button from "../../../button";
 import { useAppDispatch, useAppSelector } from "../../../../redux/store";
 import {
+  EmailProvider,
   mapColumns,
   setCurrentHomeStep,
   setEmailConfig,
 } from "../../../../redux/slices/steps";
 import { HomeSteps } from "../../../../pages/home";
 import { colors } from "../../../../styles";
-import { updateEmailSetting, validateEmail } from "../../../../utils";
-import { useProcessor } from "../../../../utils/processorProvider";
-import { index } from "cheerio/lib/api/traversing";
+import { updateEmailSetting, useToast, validateEmail } from "../../../../utils";
 import DropDown from "../../../Dropdown";
 
 const columns = [
@@ -82,7 +80,7 @@ export const Step3 = () => {
       return { ...i, password: "" };
     })
   );
-  const [mappedCols, setMappedCols] = useState(columns.map((i) => undefined));
+  const { addToast } = useToast();
   const photoUrl = useAppSelector((s) => s.state.user.photoUrl);
   const [selectedEmail, setSelectedEmail] = useState<{
     index: undefined | number;
@@ -145,18 +143,35 @@ export const Step3 = () => {
     if (selectedEmail.index !== undefined && selectedEmail.index !== -1) {
       if (selectedEmail?.mode === "edit") {
         setContinueLoading(true);
+        const temp = [...tempLinkedEmails];
+        temp[selectedEmail.index] = {
+          host: hostEditRefs.current[selectedEmail.index]?.value,
+          port: portEditRefs.current[selectedEmail.index]?.value,
+          emailAddress: emailEditRefs.current[selectedEmail.index]?.value,
+          type: EmailProvider.Any,
+          password: "",
+        };
+        console.log("onContinue updated Emails", temp);
         await updateEmailSetting(
-          tempLinkedEmails.map((i) => {
-            return {
-              host: i.host,
-              emailAddress: i.emailAddress,
-              port: i.port,
-              type: i.type,
-            };
-          })
-        );
-        setContinueLoading(false);
-        setSelectedEmail({ index: undefined, mode: undefined });
+          temp.map((i) => ({
+            host: i.host,
+            emailAddress: i.emailAddress,
+            type: i.type,
+            port: i.port,
+          }))
+        ).then(() => {
+          setTempLinkedEmails(temp);
+          setContinueLoading(false);
+          setSelectedEmail({ index: undefined, mode: undefined });
+          addToast({
+            appearance: "success",
+            title: "Updated Sucessfully",
+            message:
+              "You email with address " +
+              temp[selectedEmail.index].emailAddress +
+              " was updated sucessfully.",
+          });
+        });
       }
       if (selectedEmail?.mode === "delete") {
         setContinueLoading(true);
@@ -185,13 +200,7 @@ export const Step3 = () => {
     }
   };
 
-  const onSelectChange = () => {};
-
-  useEffect(() => {
-    console.log(
-      "passwordInputRefs.current[selectedEmail.index]?.value",
-      passwordInputRefs.current[selectedEmail.index]?.value
-    );
+  const validateEditInputs = () => {
     if (selectedEmail.index !== undefined && selectedEmail.index !== -1) {
       if (selectedEmail?.mode === "edit") {
         if (
@@ -217,22 +226,33 @@ export const Step3 = () => {
     } else {
       setContinueDisabled(true);
     }
-  }, [
-    selectedEmail,
-    hostEditRefs.current[selectedEmail.index]?.value,
-    portEditRefs.current[selectedEmail.index]?.value,
-    emailEditRefs.current[selectedEmail.index]?.value,
-    passwordInputRefs.current[selectedEmail.index]?.value,
-  ]);
+  };
+
+  // useEffect(() => {
+  //   console.log(
+  //     "passwordInputRefs.current[selectedEmail.index]?.value",
+  //     passwordInputRefs.current[selectedEmail.index]?.value
+  //   );
+
+  // }, [
+  //   selectedEmail,
+  //   hostEditRefs.current[selectedEmail.index]?.value,
+  //   portEditRefs.current[selectedEmail.index]?.value,
+  //   emailEditRefs.current[selectedEmail.index]?.value,
+  //   passwordInputRefs.current[selectedEmail.index]?.value,
+  // ]);
 
   const handleChange = (
     inputType: "host" | "port" | "password" | "emailAddress",
     index: number,
     value: string
   ) => {
-    const temp = [...tempLinkedEmails];
-    temp[index][inputType] = value;
-    setTempLinkedEmails(temp);
+    if (inputType === "password") {
+      const temp = [...tempLinkedEmails];
+      temp[index][inputType] = value;
+      setTempLinkedEmails(temp);
+    }
+    validateEditInputs();
   };
 
   return (
@@ -548,12 +568,12 @@ export const Step3 = () => {
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.2 }}
                                 animate={{ opacity: 1 }}
-                                className="input-default"
+                                className="input-default mt-3"
                                 placeholder="Email"
                                 ref={(el) =>
                                   (emailEditRefs.current[index] = el)
                                 }
-                                value={i.emailAddress}
+                                defaultValue={i.emailAddress}
                                 onChange={(e) => {
                                   handleChange(
                                     "emailAddress",
@@ -561,16 +581,17 @@ export const Step3 = () => {
                                     e.target.value
                                   );
                                 }}
+                                disabled
                               ></motion.input>
                               <motion.input
                                 initial={{ opacity: 0 }}
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.2 }}
                                 animate={{ opacity: 1 }}
-                                className="input-default"
+                                className="input-default mt-3"
                                 placeholder="Host"
                                 ref={(el) => (hostEditRefs.current[index] = el)}
-                                value={i.host}
+                                defaultValue={i.host}
                                 onChange={(e) => {
                                   handleChange("host", index, e.target.value);
                                 }}
@@ -580,9 +601,9 @@ export const Step3 = () => {
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.2 }}
                                 animate={{ opacity: 1 }}
-                                className="input-default"
+                                className="input-default mt-3"
                                 placeholder="Port"
-                                value={i.port}
+                                defaultValue={i.port}
                                 ref={(el) => (portEditRefs.current[index] = el)}
                                 type="number"
                                 onChange={(e) => {
