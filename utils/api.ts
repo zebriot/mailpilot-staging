@@ -1,6 +1,6 @@
 import axios from "axios";
 import { EmailConfig } from "../redux/slices/steps";
-export const APP_URL = "http://mailpilot.ai";
+export const APP_URL = "http://localhost:3000";
 
 const BASE_URL = "https://api.mailpilot.ai"; // LIVE AWS
 // const BASE_URL = "http://192.168.29.216:3001"; // DEV;

@@ -100,7 +100,7 @@
 }
 
 .button-text-secondary:hover {
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 
 .button-container-delete {

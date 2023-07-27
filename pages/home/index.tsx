@@ -76,7 +76,6 @@ const HomeScreen = () => {
   const { processing } = useProcessor();
   const { currentStep } = router.query;
 
-
   // if there is an ongoing process, on home a person should be directed to Brainstorming screen
   useEffect(() => {
     if (
@@ -94,7 +93,7 @@ const HomeScreen = () => {
   }, [currentStep]);
 
   return (
-    <div className="flex flex-1">
+    <div className="flex flex-1 ">
       <div className="flex flex-1 p-5 flex-col">
         <StepIndicator
           currentStep={getCurrentStep(step as HomeSteps)}
@@ -102,11 +101,11 @@ const HomeScreen = () => {
         />
         <CurrentStep currentStep={step as HomeSteps} />
       </div>
-      <div>
+      <div className="home-side-image-container hidden 2xl:flex">
         <img
           src="/svg/home-side-vector.svg"
-          className="flex flex-1 w-auto h-fit"
-          style={{ height: "100%" }}
+          className="flex flex-1 w-auto   resize-none"
+          style={{ height: "100%", width: "100%" }}
         />
       </div>
     </div>

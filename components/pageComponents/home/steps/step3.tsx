@@ -255,6 +255,10 @@ export const Step3 = () => {
     validateEditInputs();
   };
 
+  useEffect(() => {
+    validateEditInputs();
+  }, [selectedEmail]);
+
   return (
     <div className="flex flex-1 flex-col">
       <p className="header-1 mt-7">Map The Columns</p>

@@ -356,3 +356,8 @@
   gap: 10px;
   margin-bottom: 20px;
 }
+
+
+.home-side-image-container {
+  height: calc(100vh - 150px);
+}

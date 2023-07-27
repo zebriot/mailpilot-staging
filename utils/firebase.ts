@@ -55,9 +55,26 @@ export const getUser = async (defaultUID?: string) => {
   }
 };
 
-export const updateUser = async (userDetails: UserConfig) => {
+export const createUser = async (userDetails: UserConfig) => {
   const uid = firebase.auth().currentUser?.uid;
 
+  console.log("UID", uid);
+  const userDocRef = doc(firestoreDB, "users", uid);
+  const docSnap = await getDoc(userDocRef);
+  // Add a new document in collection "cities"
+  console.log("USER DOC : ", docSnap.data());
+  // dispatch(setUserDetails({ ...userDetails }));
+  try {
+    await setDoc(doc(firestoreDB, "users", uid), { ...userDetails });
+    syncUser();
+  } catch (err) {
+    console.log("updateUserConfig ERR : ", err);
+  }
+};
+
+export const updateUser = async (userDetails: UserConfig) => {
+  const uid = firebase.auth().currentUser?.uid;
+  if (!uid) return;
   console.log("UID", uid);
   const userDocRef = doc(firestoreDB, "users", uid);
   const docSnap = await getDoc(userDocRef);

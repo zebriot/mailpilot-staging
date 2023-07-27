@@ -34,7 +34,7 @@ const htmlToDraft =
   typeof window === "object" && require("html-to-draftjs").default;
 // const draftToHtml =
 //   typeof window === "object" && require("draftjs-to-html").default;
-import draftToHtml from 'draftjs-to-html'
+import draftToHtml from "draftjs-to-html";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 // import htmlToDraft from "html-to-draftjs";
@@ -141,7 +141,7 @@ export const Step5 = () => {
     navigator.clipboard.writeText(
       editorState.getCurrentContent().getPlainText("")
     );
-    
+
     setTimeout(() => setCopiedIndex(undefined), 3000);
   };
 
@@ -161,12 +161,12 @@ export const Step5 = () => {
     }
   }, [index]);
 
-  const onSubjectChange = (val:string) => {
-    setSubject(val)
+  const onSubjectChange = (val: string) => {
+    setSubject(val);
     dispatch(
       updateEmailAtIndex({
         email: {
-          subject:val,
+          subject: val,
         },
         index,
       })
@@ -196,11 +196,14 @@ export const Step5 = () => {
   if (typeof window === "undefined") return null;
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="home_mail-content-container mt-5 flex flex-1 flex-col">
+    <div
+      className="flex flex-col "
+      style={{ height: "calc(100vh - 350px)" }}
+    >
+      <div className="home_mail-content-container mt-5 flex-1 flex flex-col ">
         <div
           className="border-bottom-light items-center flex flex-row px-7 mt-1"
-          style={{ width: "100%", paddingBlock: "12px" }}
+          style={{ paddingBlock: "12px" }}
         >
           <div className="flex flex-1 flex-row items-center">
             <p
@@ -213,13 +216,13 @@ export const Step5 = () => {
             >
               Subject:{" "}
               <input
-                className="ml-2 outline-none"
+                className="ml-2 outline-none w-full"
                 style={{ color: colors.blackLogo, fontWeight: "600" }}
-                onChange={e => onSubjectChange(e.target.value)}
+                onChange={(e) => onSubjectChange(e.target.value)}
                 value={subject}
-              >
-              </input>
+              ></input>
             </p>
+            <div className="flex items-center cursor-pointer">
             <img
               className="h-6 w-6 mr-2"
               src="/svg/copy.svg"
@@ -239,6 +242,7 @@ export const Step5 = () => {
             >
               {copiedIndex === undefined ? "Copy" : "Copied"}
             </p>
+            </div>
           </div>
           <img
             src="/svg/vertical-line.svg"
@@ -267,15 +271,17 @@ export const Step5 = () => {
             preset="primary"
           />
         </div>
-        <div
-          className="flexbox flex-row my-0 flex-shrink-0 flex-grow basis-0 "
-          style={{
-            height: "600px",
-          }}
-        >
+        <div className="flex flex-row my-0 flex-1 overflow-auto z-1 relative  ">
           <Editor
             editorState={editorState}
             onEditorStateChange={onEditorStateChange}
+            wrapperStyle={{
+              height: "100%",
+              padding: 0,
+            }}
+            editorStyle={{ padding: 0, zIndex: 0 }}
+            editorClassName="p-0 m-0"
+            toolbarHidden
           />
         </div>
         <div

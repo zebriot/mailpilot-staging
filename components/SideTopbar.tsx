@@ -110,12 +110,14 @@ const SideTopbar = ({ children }) => {
 
   if (!activeMenu?.id)
     return (
-      <div className="h-full w-screen flex-row flex flex-1">{children}</div>
+      <div className="h-full w-screen flex-row flex flex-1 ">
+        {children}
+      </div>
     );
 
   return (
-    <div className="h-full w-screen flex-row flex flex-1">
-      <div className="sidebar-container">
+    <div className="h-full w-screen flex-row flex flex-1 ">
+      <div className="sidebar-container ">
         <div
           className={wrapperClasses}
           onMouseEnter={onMouseOver}
@@ -124,8 +126,12 @@ const SideTopbar = ({ children }) => {
         >
           <div className="flex flex-col">
             <div className="flex items-center justify-between relative ">
-              <div className="flex items-center pl-1 h-14 transition-all duration-500"style={{
-                            opacity: toggleCollapse ? 0 : 1}}>
+              <div
+                className="flex items-center pl-1 h-14 transition-all duration-500"
+                style={{
+                  opacity: toggleCollapse ? 0 : 1,
+                }}
+              >
                 <img
                   src="/svg/mail-pilot-logo.svg"
                   alt="Logo"
@@ -136,7 +142,6 @@ const SideTopbar = ({ children }) => {
               <button
                 className={collapseIconClasses}
                 onClick={handleSidebarToggle}
-                
               >
                 {/* <CollapsIcon /> */}
                 <img
@@ -245,8 +250,8 @@ const SideTopbar = ({ children }) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-1 flex-col sidetopbar-container">
-        <div className="sidetopbar-content-container">
+      <div className="flex flex-1 flex-col sidetopbar-container ">
+        <div className="sidetopbar-content-container ">
           <div className="sidebar_search-container">
             <img src="/svg/search.svg" className=" h-6 w-6" />
             <input
@@ -271,7 +276,7 @@ const SideTopbar = ({ children }) => {
               </p>
             </div>
           </div>
-          <div className="flex flex-row items-center align-middle">
+          <div className="flex flex-row items-center align-middle ">
             {/* Quick Create Button */}
             <Button
               title="Create"

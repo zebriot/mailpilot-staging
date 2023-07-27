@@ -35,9 +35,9 @@ const MailPilot = ({ Component, pageProps }) => {
 
   useEffect(() => {
     auth.onAuthStateChanged(async function (user) {
+      console.log("CHANGE IN AUTH STATE");
       if (router.route === "/") {
         stopLoader();
-
         return;
       }
       startLoader();
@@ -81,7 +81,7 @@ const MailPilot = ({ Component, pageProps }) => {
       <Provider store={store}>
         <ToastProvider>
           <ProcessorProvider>
-            <main className="main-container">
+            <main className="main-container ">
               <SideTopbar>
                 <Component {...pageProps} />
               </SideTopbar>

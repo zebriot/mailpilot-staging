@@ -244,6 +244,7 @@ html,
 body {
   scrollbar-width: none;
   padding: 0;
+  overscroll-behavior: none;
   margin: 0;
   font-family: "Inter";
   line-height: 1.6;
@@ -584,6 +585,8 @@ img {
   height: 100vh;
   background-color: #f5f5f5;
   width: 100%;
+overscroll-behavior: none;
+
 }
 
 .logo-default {

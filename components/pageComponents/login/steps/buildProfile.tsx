@@ -3,7 +3,7 @@ import { colors } from "../../../../styles";
 import Input from "../../../Input";
 import TextArea from "../../../TextArea";
 import TagInput from "../../../TagInput";
-import { UserConfig, updateUser } from "../../../../utils";
+import { UserConfig, createUser } from "../../../../utils";
 import Button from "../../../button";
 import firebase from "firebase/compat/app";
 import { useLoader } from "../../../../utils/providers";
@@ -52,7 +52,7 @@ export const BuildProfile = () => {
       company: { name: companyName, description: companyDescription },
       emailAccounts: [],
     };
-    await updateUser(user);
+    await createUser(user);
     setButtonLoading(false);
     stopLoader();
     Router.push({

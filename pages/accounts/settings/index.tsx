@@ -9,6 +9,7 @@ import { Profile } from "../../../components/pageComponents/accounts/settings/pr
 import { ConnectedAccounts } from "../../../components/pageComponents/accounts/settings/connectedAccounts";
 
 import { colors } from "../../../styles";
+import { useLoader } from "../../../utils/providers";
 
 export type TabSettings = "profile" | "connected-accounts";
 
@@ -17,13 +18,17 @@ const getLabel = (s: TabSettings) => {
 };
 
 const Settings = () => {
+  const { startLoader, stopLoader } = useLoader();
   const currentStep = useAppSelector(
     (state) => state.state.addEmailState.currentStep
   );
   const router = useRouter();
   const auth = firebase.auth();
-  const logOut = () => {
-    auth.signOut();
+  const logOut = async () => {
+    startLoader();
+    await auth.signOut();
+    router.replace({ pathname: "/login" });
+    setTimeout(stopLoader, 100);
   };
 
   const { selected } = router.query;
@@ -48,7 +53,7 @@ const Settings = () => {
             borderColor: colors.light100,
             paddingInline: "30px",
             marginBlock: "30px",
-            gap:'10px'
+            gap: "10px",
           }}
         >
           <TabItem

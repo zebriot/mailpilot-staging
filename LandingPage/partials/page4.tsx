@@ -16,40 +16,16 @@ const LookingForwardItemVariantsMD = {
   hidden: {
     opacity: 0.4,
     top: "10vw",
-    scale: 0,
+    scaleY: 0,
   },
   visible: {
     opacity: 1,
     top: 0,
-    scale: 1,
+    scaleY: 1,
   },
 };
 
 const LookForwardScrollMD = () => {
-  useEffect(() => {
-    const childElement = document.getElementById("lookForwardScroll");
-    const page5 = document.getElementById("landing_page5__container");
-    const mainScroll = document.getElementById("main-landing-container");
-    const switchScrollPosition =
-      mainScroll.scrollHeight - window.innerHeight - page5.offsetHeight;
-    const handleParentScroll = () => {
-      const parentScrollTop = mainScroll.scrollTop;
-      console.log("STOP SCROLL ", parentScrollTop, switchScrollPosition);
-      if (parentScrollTop >= switchScrollPosition) {
-        // If the parent scroll position is at or beyond the switchScrollPosition, stop the parent scroll
-        mainScroll.style.overflow = "hidden";
-      } else {
-        // If the parent scroll position is before the switchScrollPosition, enable scrolling on the parent
-        mainScroll.style.overflow = "auto";
-      }
-    };
-
-    mainScroll.addEventListener("scroll", handleParentScroll);
-
-    return () => {
-      mainScroll.removeEventListener("scroll", handleParentScroll);
-    };
-  }, []);
 
   const handleChildMouseEnter = () => {
     const mainScroll = document.getElementById("landing_page5__container");
@@ -81,7 +57,7 @@ const LookForwardScrollMD = () => {
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     clearTimeout(timeoutId);
     const parentWidth =
-      document.getElementById("lookForwardScroll").offsetWidth;
+      document.getElementById("lookForwardScrollMD").offsetWidth;
     console.log("scrollX3", latest, parentWidth);
 
     if (latest < 0.2) {
@@ -100,7 +76,7 @@ const LookForwardScrollMD = () => {
     <div className=" relative flex flex-row items-center">
       <motion.div
         ref={lookForwardScrollRef}
-        id="lookForwardScroll"
+        id="lookForwardScrollMD"
         className="flex flex-col overflow-scroll "
         style={{
           // as per the ratio of the images i am  using
@@ -214,7 +190,7 @@ const LookForwardScrollSM = () => {
 
   useEffect(() => {
     const parentWidth = document.getElementById(
-      "lookForwardScrollMD"
+      "lookForwardScrollSM"
     ).offsetWidth;
     switch (currentSection) {
       case 0: {
@@ -251,7 +227,7 @@ const LookForwardScrollSM = () => {
   useMotionValueEvent(scrollX, "change", (latest) => {
     clearTimeout(timeoutId);
     const parentWidth = document.getElementById(
-      "lookForwardScrollMD"
+      "lookForwardScrollSM"
     ).offsetWidth;
     if (latest < parentWidth / 2) {
       const id = setTimeout(() => {
@@ -279,7 +255,7 @@ const LookForwardScrollSM = () => {
     <div className=" relative">
       <motion.div
         ref={lookForwardScrollRef}
-        id="lookForwardScrollMD"
+        id="lookForwardScrollSM"
         className="flex flex-row overflow-scroll "
         style={{ width: "80vw", alignSelf: "center" }}
       >
@@ -347,7 +323,7 @@ export const Page4 = ({
 }) => {
   return (
     <motion.div
-      className="relative flex flex-col overscroll-none z-40"
+      className="relative flex flex-col  z-40"
       id="landing_page4__container"
       style={containerStyle()}
     >

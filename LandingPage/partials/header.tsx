@@ -40,8 +40,10 @@ const sideVariants = {
 
 export const Header = ({
   scrollToPage,
+  openJoinBetaModal,
 }: {
   scrollToPage: (p: number) => void;
+  openJoinBetaModal: () => void;
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -55,7 +57,7 @@ export const Header = ({
           className="hidden logo-default md:flex"
         />
         <div className="hidden  flex-row md:flex">
-          {data.map((i) => (
+          {data.slice(0, 4).map((i) => (
             <p
               onClick={() => scrollToPage(i.page)}
               className="landing_page__header_menu_text"
@@ -75,9 +77,8 @@ export const Header = ({
           <Button
             title="Join Beta"
             preset="primary"
-            onPress={() => Router.push({ pathname: "/joinbeta" })}
+            onPress={openJoinBetaModal}
             cursor={false}
-
           />
         </div>
         <img
@@ -175,6 +176,7 @@ const data = [
   { label: "How To", page: 2 },
   { label: "Features", page: 3 },
   { label: "Subscribe", page: 4 },
+  { label: "Join Beta", page: 5 },
 ];
 
 const dataDark = [
@@ -182,7 +184,7 @@ const dataDark = [
   { label: "How To", page: 2 },
   { label: "Features", page: 3 },
   { label: "Subscribe", page: 4 },
-  { label: "GetStarted", page: 5 },
+  { label: "Join Beta", page: 5 },
 ];
 
 const headerDarkAbsoluteVariants = {
@@ -207,10 +209,12 @@ export const HeaderAbsoluteDark = ({
   visible,
   currentPage,
   scrollToPage,
+  openJoinBetaModal,
 }: {
   visible: boolean;
   currentPage: number;
   scrollToPage: (p: number) => void;
+  openJoinBetaModal: () => void;
 }) => {
   console.log("SELECTDED PAGE", currentPage);
   return (
@@ -232,7 +236,12 @@ export const HeaderAbsoluteDark = ({
     >
       {dataDark.map((i) => (
         <div
-          onClick={() => scrollToPage(i.page)}
+          onClick={() => {
+            if (i.page === 5) {
+              scrollToPage(0);
+              setTimeout(openJoinBetaModal, 200);
+            } else scrollToPage(i.page);
+          }}
           className="relative h-full flex items-center"
         >
           {currentPage === i.page && (
@@ -266,11 +275,13 @@ export const HeaderAbsoluteDark = ({
 export const HeaderAbsolute = ({
   visible,
   currentPage,
+  openJoinBetaModal,
   scrollToPage,
 }: {
   visible: boolean;
   currentPage: number;
   scrollToPage: (p: number) => void;
+  openJoinBetaModal: () => void;
 }) => {
   console.log("SELECTDED PAGE", currentPage);
   return (
@@ -292,7 +303,12 @@ export const HeaderAbsolute = ({
       {data.map((i) => (
         <div
           className="relative h-full flex items-center"
-          onClick={() => scrollToPage(i.page)}
+          onClick={() => {
+            if (i.page === 5) {
+              scrollToPage(0)
+              setTimeout(openJoinBetaModal, 200);
+            } else scrollToPage(i.page);
+          }}
         >
           {currentPage === i.page && (
             <motion.div

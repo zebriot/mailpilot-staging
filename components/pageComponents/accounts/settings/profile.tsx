@@ -295,7 +295,9 @@ const EmailSignatures = () => {
       </p>
       <div
         className="basic-border-outline flex flex-row flex-1"
-        style={{ padding: 0, height: 300 }}
+        style={{ padding: 0, 
+          // height: 300 
+        }}
       >
         <div
           style={{
@@ -491,7 +493,7 @@ const EmailSignatures = () => {
               onEditorStateChange={handleEditorStateChange}
               toolbarClassName="account__settings__toolbar"
               wrapperStyle={{ height: "100%", padding: 0 }}
-              editorStyle={{ padding: 0 , zIndex:0 }}
+              editorStyle={{ padding: 0, zIndex: 0 }}
               editorClassName="p-0 m-0"
               // wrapperClassName=" relative"
               toolbarHidden

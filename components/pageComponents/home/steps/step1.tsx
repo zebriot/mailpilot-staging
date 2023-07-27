@@ -10,10 +10,9 @@ import { colors } from "../../../../styles";
 import Router from "next/router";
 import { HomeSteps } from "../../../../pages/home";
 
-
 const SelectedCheck = () => {
   return (
-    <div className="flex h-8 w-8 rounded-lg bg-white items-center justify-center absolute right-4 top-4">
+    <div className="flex h-8 w-8 rounded-lg bg-neutral100 items-center justify-center absolute right-4 top-4">
       <img src="/svg/tick-black.svg" className="h-4 w-4" />
     </div>
   );
@@ -42,7 +41,7 @@ export const Step1 = () => {
   console.log("SELECTED PURPOSE : ", selectedPurpose);
 
   return (
-    <div>
+    <div className="">
       <p className="header-1 mt-7">Select Email Type</p>
       <p className="descriptive-1">
         Begin from scratch or view drafts & saved templates.
@@ -143,7 +142,7 @@ export const Step1 = () => {
           preset="secondary"
           containerStyle={{ marginRight: "20px" }}
         /> */}
-        <Button title="Continue" preset="primary" onPress={next} />
+        <Button title="Continue" preset="primary" onPress={next} disabled={selectedPurpose === PurposeType.null} />
       </div>
     </div>
   );
