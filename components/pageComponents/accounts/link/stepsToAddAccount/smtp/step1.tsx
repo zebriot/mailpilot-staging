@@ -57,19 +57,19 @@ export const SMTPStep1 = () => {
       <p
         className="border-bottom-light"
         style={{
-          fontSize: "24px",
-          lineHeight: "44px",
+          fontSize: "19px",
+          lineHeight: "35px",
           textAlign: "center",
           fontWeight: "600",
-          paddingBottom: "20px",
-          paddingInline: "10px",
+          paddingBottom: "16px",
+          paddingInline: "8px",
           width: "100%",
         }}
       >
         Configure SMTP
       </p>
       <div className="flex flex-col" style={{ width: "100%" }}>
-        <div className="flex flex-row mt-8 flex-1 items-center p-1  cursor-pointer">
+        <div className="flex flex-row mt-8 flex-1 items-center p-1  cursor-pointer mb-1">
           <input
             className={`input-default`}
             type="email"
@@ -78,7 +78,7 @@ export const SMTPStep1 = () => {
             placeholder="Email (Eg : sid@sight3.io)"
           />
         </div>
-        <div className="flex flex-row flex-1 items-center p-1  cursor-pointer">
+        <div className="flex flex-row flex-1 items-center p-1  cursor-pointer mb-1">
           <input
             className={`input-default`}
             type="email"
@@ -87,7 +87,7 @@ export const SMTPStep1 = () => {
             placeholder="Host (Eg: imap.secureserver.net)"
           />
         </div>
-        <div className="flex flex-row flex-1 items-center p-1  cursor-pointer">
+        <div className="flex flex-row flex-1 items-center p-1  cursor-pointer mb-1">
           <input
             className={`input-default`}
             type="number"
@@ -96,7 +96,7 @@ export const SMTPStep1 = () => {
             placeholder="Port (Eg: 997)"
           />
         </div>
-        <p style={{ textAlign: "center", color: "red" }}>
+        <p style={{ textAlign: "center", color: "red" , fontSize:'12px'}}>
           You will be asked for password on on every campaign.
         </p>
       </div>
@@ -106,7 +106,7 @@ export const SMTPStep1 = () => {
         onPress={onSubmit}
         preset="primary"
         containerStyle={{
-          marginTop: "20px",
+          marginTop: "16px",
           width: "100%",
           justifyContent: "center",
         }}

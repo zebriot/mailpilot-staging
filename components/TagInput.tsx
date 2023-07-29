@@ -5,8 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 
 interface TagInputProps extends InputProps {
   tags: string[];
-  error?:string,
+  error?: string;
   setTags: (a: string[]) => void;
+  maxTagLength?: number;
 }
 
 const TagInput = forwardRef<InputRef, TagInputProps>((props, ref) => {
@@ -20,6 +21,7 @@ const TagInput = forwardRef<InputRef, TagInputProps>((props, ref) => {
     onKeyDown,
     style,
     error,
+    maxTagLength = 5,
     ...rest
   } = props;
 
@@ -38,7 +40,7 @@ const TagInput = forwardRef<InputRef, TagInputProps>((props, ref) => {
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (inputRef.current.value) {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" && tags.length < maxTagLength) {
         setTags([...tags, inputRef.current.value]);
         inputRef.current.value = "";
       }
@@ -51,8 +53,8 @@ const TagInput = forwardRef<InputRef, TagInputProps>((props, ref) => {
       {label && <p className="text-sm text-black font-medium mb-1">{label}</p>}
       <input
         ref={inputRef}
-        className={`input-default ${error && 'invalid'} mt-1` + className}
-        style={{ height: "52px", ...style }}
+        className={`input-default ${error && "invalid"} mt-1` + className}
+        style={{ height: "42px", ...style }}
         onKeyDown={handleInputKeyDown}
         {...rest}
       />
@@ -71,18 +73,44 @@ const TagInput = forwardRef<InputRef, TagInputProps>((props, ref) => {
             {error}
           </motion.p>
         )}
+        <div
+          className="flex-row flex flex-wrap mb-3"
+        >
+          {tags.map((i) => (
+            <motion.div
+              transition={{ duration: 0.1 }}
+              className="flex flex-row tag-wrapper"
+              initial={{ height: 0, marginTop: 0, opacity: 0.5 }}
+              animate={{ height: "32px", marginTop: "8px", opacity: 1 }}
+              exit={{ height: 0, marginTop: 0, opacity: 0.5 }}
+            >
+              <motion.p
+                initial={{
+                  scaleY: 0,
+                }}
+                animate={{
+                  color: colors.primary,
+                  marginRight: "5px",
+                  fontWeight: 500,
+                  fontSize: "13px",
+                  scaleY: 1,
+                }}
+                exit={{
+                  scaleY: 0,
+                }}
+              >
+                {i}
+              </motion.p>
+              <button
+                className="cursor-pointer min-w-fit"
+                onClick={() => deleteTag(i)}
+              >
+                <img src="/svg/x.svg" className="h-4 w-4" />
+              </button>
+            </motion.div>
+          ))}
+        </div>
       </AnimatePresence>
-      <div className="flex-row flex overflow-scroll">
-        {tags.map((i) => (
-          <div className="flex flex-row tag-wrapper">
-            <p style={{ color: colors.primary, marginRight: 5 }}>{i}</p>
-            <button className="cursor-pointer" onClick={() => deleteTag(i)}>
-              <img src="/svg/x.svg" className="h-5 w-5" />
-            </button>
-          </div>
-        ))}
-      </div>
-      
     </div>
   );
 });

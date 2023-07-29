@@ -38,14 +38,14 @@ const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   return (
     <div className={"flex-1 flex flex-col pb-4 " + containerClass}>
       {label && (
-        <p className={"text-sm text-black font-medium mb-1 " + labelClass}>
+        <p className={"text-[13px] text-black font-medium mb-[3px] " + labelClass}>
           {label}
         </p>
       )}
       <input
         ref={inputRef}
         className={`input-default ${error && "invalid"} mt-1 ` + className}
-        style={{ height: "52px", zIndex: 2, ...style }}
+        style={{ height: "42px", zIndex: 2, ...style }}
         {...rest}
       />
       <AnimatePresence>

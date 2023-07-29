@@ -72,7 +72,7 @@ export const Login = () => {
         fill
         alt="Background SVG"
       />
-      <div className="content-container-pre-login">
+      <div className="content-container-pre-login" >
         <img
           src="/svg/mail-pilot-logo.svg"
           alt="Logo"

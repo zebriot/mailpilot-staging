@@ -156,14 +156,14 @@ export const SignIn = () => {
   return (
     <>
       <div className="content-child-container-pre-login">
-        <p className="text-5xl my-12  text-center font-medium">
+        <p className="text-4xl my-10  text-center font-medium">
           💼 Let’s get
           <br />
           you started
         </p>
         <input
           className={`input-default ${!isValid && "invalid"}`}
-          style={{ height: "52px" }}
+          style={{ height: "42px" }}
           type="email"
           value={email}
           onChange={handleInputChange}
@@ -195,7 +195,7 @@ export const SignIn = () => {
 
         <div className="or-divider-container">
           <div className="or-divider" />
-          <p className="text-light mx-5 text-lg">OR</p>
+          <p className="text-light mx-4 text-base">OR</p>
           <div className="or-divider" />
         </div>
 

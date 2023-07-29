@@ -46,16 +46,16 @@ export const VerifyEmail = () => {
   return (
     <>
       <div className="content-child-container-pre-login">
-        <p className="text-5xl text-center font-medium">
+        <p className="text-4xl text-center font-medium">
           🔓 Please verify
           <br />
           your email account
         </p>
-        <p className="text-5xl my-16 text-center font-medium">{code}</p>
+        <p className="text-4xl my-12 text-center font-medium">{code}</p>
         <Button
           title="Go to Inbox"
           preset="primary"
-          containerStyle={{ width: "100%", marginBottom: "20px" }}
+          containerStyle={{ width: "100%", marginBottom: "16px" }}
           onPress={goToInbox}
         />
         <p className="text-light">

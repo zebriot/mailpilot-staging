@@ -36,7 +36,7 @@ export const StepIndicator = ({
             );
           })}
       </div>
-      <p className="descriptive-2 mt-4">
+      <p className="descriptive-2 mt-3">
         {currentStep} of {totalSteps}
       </p>
     </div>

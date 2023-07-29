@@ -99,7 +99,7 @@ export const Button = ({
 
               className={classes.icon}
               src={iconSrc}
-              style={{ color: "#FFF", marginRight: "5px", ...iconStyle }}
+              style={{ color: "#FFF", marginRight: "5px",height:'19px', width:'19px',resize:'both',  ...iconStyle }}
               color={"#FFF"}
             />
           )}
@@ -110,8 +110,9 @@ export const Button = ({
             <img
               className={classes.icon}
               src={iconSrc}
-              style={{ color: "#FFF", marginLeft: "5px", ...iconStyle }}
+              style={{ color: "#FFF", marginLeft: "5px",height:'19px', width:'19px', resize:'both',  ...iconStyle }}
               color={"#FFF"}
+
             />
           )}
         </>

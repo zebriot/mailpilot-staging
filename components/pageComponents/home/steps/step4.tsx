@@ -47,29 +47,29 @@ export const Step4 = () => {
 
   return (
     <div className="flex flex-1 flex-col">
-      <p className="header-1 mt-7">Brainstorm In Progress...</p>
+      <p className="header-1 mt-5">Brainstorm In Progress...</p>
       <p className="descriptive-1">
         Milo is currently pre-occupied writing emails, please patient.
       </p>
       <div className="home_mail-content-container items-center justify-center flex flex-col">
         <Lottie
           options={defaultOptions}
-          height={400}
-          width={400}
+          height={280}
+          width={280}
           isStopped={false}
           isPaused={false}
-          style={{ marginBottom: "40px" }}
+
         />
         <p
           style={{
-            fontSize: "20px",
+            fontSize: "16px",
             color: colors.success300,
             fontWeight: "bold",
           }}
         >
           {(progress / csv.parseData.length) * 100}%
         </p>
-        <p style={{ fontSize: "14px", fontWeight: "bold" }}>{status}</p>
+        <p style={{ fontSize: "12px", fontWeight: "bold" }}>{status}</p>
       </div>
 
       <div className="flex flex-row mt-5">
@@ -77,7 +77,7 @@ export const Step4 = () => {
           title="Back"
           iconSrc="/svg/arrow-left.svg"
           preset="secondary"
-          containerStyle={{ marginRight: "20px" }}
+          containerStyle={{ marginRight: "16px" }}
           onPress={prev}
         />
         <Button

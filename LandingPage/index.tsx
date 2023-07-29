@@ -273,7 +273,7 @@ let timeoutId
         ></link>
       </Head>
       <motion.div
-        className="h-full w-full flex flex-col items-center bg-neutral100 cursor-none"
+        className="h-full w-full flex flex-col items-center bg-neutral100 cursor-nonetempLinkedEmails"
         id="main-landing-container"
       >
         <div

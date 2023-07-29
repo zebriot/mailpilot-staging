@@ -42,8 +42,8 @@ const Settings = () => {
   );
 
   return (
-    <div className="flex flex-1 flex-col p-5 k">
-      <p className="header-1 mb-5">Account Settings</p>
+    <div className="flex flex-1 flex-col p-[13px] ">
+      <p className="header-1 mb-[13px]">Account Settings</p>
 
       <div className="settings_content-container relative flex-row">
         <div
@@ -51,9 +51,9 @@ const Settings = () => {
           style={{
             borderRightWidth: "2px",
             borderColor: colors.light100,
-            paddingInline: "30px",
-            marginBlock: "30px",
-            gap: "10px",
+            paddingInline: "16px",
+            marginBlock: "24px",
+            gap: "8px",
           }}
         >
           <TabItem
@@ -68,14 +68,14 @@ const Settings = () => {
             label="Connected Accounts"
           />
         </div>
-        <div className="flex flex-1 flex-col " style={{ padding: "30px" }}>
+        <div className="flex flex-1 flex-col " style={{ padding: "24px" }}>
           <p className="h6">{getLabel(active)}</p>
           {active === "profile" ? <Profile /> : <ConnectedAccounts />}
         </div>
         <Button
           title="Log Out"
           preset="primary"
-          containerStyle={{ position: "absolute", right: 20, bottom: 10 }}
+          containerStyle={{ position: "absolute", right: 16, bottom: 8 }}
           onPress={logOut}
         />
       </div>

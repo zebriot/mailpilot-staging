@@ -76,9 +76,11 @@ export const Step3 = () => {
   const labels = useAppSelector((s) => s.state.csv.labels);
   const linkedEmails = useAppSelector((s) => s.state.user.emailAccounts);
   const [tempLinkedEmails, setTempLinkedEmails] = useState(
-    linkedEmails?.map((i) => {
-      return { ...i, password: "" };
-    })
+    linkedEmails?.length
+      ? linkedEmails?.map((i) => {
+          return { ...i, password: "" };
+        })
+      : []
   );
   const { addToast } = useToast();
   const photoUrl = useAppSelector((s) => s.state.user.photoUrl);
@@ -261,17 +263,17 @@ export const Step3 = () => {
 
   return (
     <div className="flex flex-1 flex-col">
-      <p className="header-1 mt-7">Map The Columns</p>
+      <p className="header-1 mt-5">Map The Columns</p>
       <p className="descriptive-1">
         If not automatically detected, please assign the correct columns.
       </p>
       <div className="home_mail-content-container p-8 flex-col">
-        <div className="flex flex-row justify-between pb-5 ">
+        <div className="flex flex-row justify-between pb-1 ">
           <p
             style={{
               fontWeight: "500",
-              fontSize: "20px",
-              lineHeight: "24px",
+              fontSize: "16px",
+              lineHeight: "19px",
               alignItems: "center",
               color: "#000000",
             }}
@@ -281,8 +283,8 @@ export const Step3 = () => {
           <p
             style={{
               fontWeight: "500",
-              fontSize: "20px",
-              lineHeight: "24px",
+              fontSize: "16px",
+              lineHeight: "19px",
               alignItems: "center",
               color: "#000000",
             }}
@@ -292,13 +294,13 @@ export const Step3 = () => {
         </div>
         <div className="flex flex-1 flex-col overflow-scroll">
           {columns.map((i, index) => (
-            <div className="flex flex-row justify-between py-6">
+            <div className="flex flex-row justify-between py-[19px]">
               <div className="flex flex-1 flex-col">
                 <p
                   style={{
                     fontWeight: "500",
-                    fontSize: "16px",
-                    lineHeight: "19px",
+                    fontSize: "13px",
+                    lineHeight: "16px",
                     color: "#000000",
                     marginBottom: "6px",
                   }}
@@ -308,18 +310,17 @@ export const Step3 = () => {
                 <p
                   style={{
                     fontWeight: "500",
-                    fontSize: "14px",
-                    lineHeight: "17px",
+                    fontSize: "11px",
+                    lineHeight: "14px",
                     color: "#667085",
                   }}
                 >
                   {i.exampleDescription}
                 </p>
               </div>
-              <img src="/svg/arrow-right.svg" className=" h-9 w-9" />
+              <img src="/svg/arrow-right.svg" className=" h-7 w-7" />
               <div className="flex flex-1 flex-col items-end">
                 <DropDown
-                  isMulti
                   ref={(el) => {
                     selectRefs.current[index] = el;
                   }}
@@ -343,12 +344,12 @@ export const Step3 = () => {
         </div>
       </div>
 
-      <div className="flex flex-row mt-5">
+      <div className="flex flex-row mt-4">
         <Button
           title="Back"
           iconSrc="/svg/arrow-left.svg"
           preset="secondary"
-          containerStyle={{ marginRight: "20px" }}
+          containerStyle={{ marginRight: "16px" }}
           onPress={prev}
         />
         <Button
@@ -363,24 +364,24 @@ export const Step3 = () => {
         <AnimatePresence>
           {isModalOpen && (
             <motion.div
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.3 }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="home_select-email-modal-container z-20"
+              className="home_select-email-modal-container z-20 transition-all"
               onClick={(e) => {
                 e.stopPropagation();
                 setModalOpen(false);
               }}
               style={{ zIndex: 99999 }}
             >
-              <div
-                className="home_select-emial-modal-content-container relative z-30"
+              <motion.div
+                className="home_select-emial-modal-content-container  relative z-30"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="border-bottom-light pb-7 px-5 relative ">
+                <div className="border-bottom-light pb-5 px-4 relative ">
                   <motion.p
-                    className="h6 mb-3"
+                    className="h6 mb-2"
                     style={{
                       color: colors.neutral900,
                       textAlign: "center",
@@ -407,281 +408,297 @@ export const Step3 = () => {
                   </motion.p>
                   <img
                     onClick={() => setModalOpen(false)}
-                    className=" absolute h-6 w-6 right-0 top-0 cursor-pointer"
+                    className="absolute h-[19px] w-[19px] right-0 top-0 cursor-pointer"
                     src="/svg/x-light.svg"
                   />
                 </div>
-                <div className=" mt-7">
-                  {tempLinkedEmails.map((i, index) => {
-                    return (
-                      <>
-                        <motion.div
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            selectedEmail?.mode === undefined &&
-                              setSelectedEmail({ index, mode: "select" });
-                          }}
-                          // custom={index}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          initial={{
-                            opacity: 1,
-                            height: 71,
-                            marginBottom: "10px",
-                          }}
-                          animate={{
-                            opacity:
-                              selectedEmail.index === undefined
-                                ? 1
-                                : index === selectedEmail.index
-                                ? 1
-                                : 0,
-                            height:
-                              selectedEmail.index === undefined
-                                ? 71
-                                : index === selectedEmail.index
-                                ? 71
-                                : 0,
-                            marginBottom:
-                              selectedEmail.index === undefined
-                                ? "10px"
-                                : index === selectedEmail.index
-                                ? "10px"
-                                : "0px",
-                          }}
-                          layout
-                          key={i.emailAddress}
-                          className="home_email-option-container"
-                        >
-                          <div
-                            className="flex flex-row items-center justify-between"
-                            style={{ width: "100%" }}
+                <AnimatePresence>
+                  <div className="mt-5">
+                    {tempLinkedEmails.map((i, index) => {
+                      if (
+                        selectedEmail.mode !== undefined  &&
+                        selectedEmail.index !== index
+                      )
+                        return null;
+                      return (
+                        <>
+                          <motion.div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              selectedEmail?.mode === undefined &&
+                                setSelectedEmail({ index, mode: "select" });
+                            }}
+                            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                            transition={{ duration: 0.3 }}
+                            initial={{
+                              opacity: 1,
+                              height: 71,
+                              marginBottom: "10px",
+                            }}
+                            animate={{
+                              opacity:
+                                selectedEmail.index === undefined
+                                  ? 1
+                                  : index === selectedEmail.index
+                                  ? 1
+                                  : 0,
+                              height:
+                                selectedEmail.index === undefined
+                                  ? 71
+                                  : index === selectedEmail.index
+                                  ? 71
+                                  : 0,
+                              marginBottom:
+                                selectedEmail.index === undefined
+                                  ? "10px"
+                                  : index === selectedEmail.index
+                                  ? "10px"
+                                  : "0px",
+                            }}
+                            layout
+                            key={i.emailAddress}
+                            className="home_email-option-container"
                           >
-                            <div className="flex flex-row items-center">
-                              <img
-                                src={photoUrl}
-                                alt={i?.name}
-                                className=" h-10 w-10"
-                                style={{
-                                  borderRadius: "20px",
-                                  marginRight: "15px",
-                                }}
-                              />
-
-                              <div className="flex-col flex">
-                                <p
-                                  style={{
-                                    fontSize: "16px",
-                                    fontWeight: "600",
-                                  }}
-                                >
-                                  {i?.name}
-                                </p>
-                                <p
-                                  style={{
-                                    fontSize: "14px",
-                                    fontWeight: "500",
-                                    color: colors.light300,
-                                  }}
-                                >
-                                  {i.emailAddress}
-                                </p>
-                              </div>
-                            </div>
-                            <Menu
-                              menuClassName={
-                                "home_email-options-menu-container"
-                              }
-                              menuButton={
-                                <img
-                                  onClick={(e) => e.stopPropagation()}
-                                  src="/svg/more.svg"
-                                  className="h-6 w-6"
-                                />
-                              }
+                            <div
+                              className="flex flex-row items-center justify-between"
+                              style={{ width: "100%" }}
                             >
-                              <MenuItem
-                                className="flex flex-row items-center mb-1"
-                                onClick={(e) => {
-                                  e.syntheticEvent.stopPropagation();
-                                  setSelectedEmail({ index, mode: "edit" });
-                                }}
-                              >
+                              <div className="flex flex-row items-center">
                                 <img
-                                  src="/svg/edit-white.svg"
-                                  className="h-4 w-4 mr-1"
-                                />
-                                <p
+                                  src={photoUrl}
+                                  alt={i?.name}
+                                  className=" h-10 w-10"
                                   style={{
-                                    fontSize: "12px",
-                                    fontWeight: "500",
-                                    letterSpacing: "-0.12px",
+                                    borderRadius: "20px",
+                                    marginRight: "12px",
+                                  }}
+                                />
+
+                                <div className="flex-col flex">
+                                  <p
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                   {i?.name}
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: "13px",
+                                      fontWeight: "500",
+                                      color: colors.light300,
+                                    }}
+                                  >
+                                    {i.emailAddress}
+                                  </p>
+                                </div>
+                              </div>
+                              <Menu
+                                menuClassName={
+                                  "home_email-options-menu-container"
+                                }
+                                menuButton={
+                                  <img
+                                    onClick={(e) => e.stopPropagation()}
+                                    src="/svg/more.svg"
+                                    className="h-6 w-6"
+                                  />
+                                }
+                              >
+                                <MenuItem
+                                  className="flex flex-row items-center mb-1"
+                                  onClick={(e) => {
+                                    e.syntheticEvent.stopPropagation();
+                                    setSelectedEmail({ index, mode: "edit" });
                                   }}
                                 >
-                                  Edit
-                                </p>
-                              </MenuItem>
-                              <MenuItem
-                                className="flex flex-row items-center"
-                                onClick={(e) => {
-                                  e.syntheticEvent.stopPropagation();
-                                  setSelectedEmail({ index, mode: "delete" });
-                                }}
-                              >
-                                <img
-                                  src="/svg/trash.svg"
-                                  className="h-4 w-4 mr-1"
-                                />
-                                <p
-                                  style={{
-                                    fontSize: "12px",
-                                    fontWeight: "500",
-                                    letterSpacing: "-0.12px",
+                                  <img
+                                    src="/svg/edit-white.svg"
+                                    className="h-4 w-4 mr-1"
+                                  />
+                                  <p
+                                    style={{
+                                      fontSize: "12px",
+                                      fontWeight: "500",
+                                      letterSpacing: "-0.12px",
+                                    }}
+                                  >
+                                    Edit
+                                  </p>
+                                </MenuItem>
+                                <MenuItem
+                                  className="flex flex-row items-center"
+                                  onClick={(e) => {
+                                    e.syntheticEvent.stopPropagation();
+                                    setSelectedEmail({ index, mode: "delete" });
                                   }}
                                 >
-                                  Delete
-                                </p>
-                              </MenuItem>
-                            </Menu>
-                          </div>
-                        </motion.div>
-                        {selectedEmail.index === index &&
-                          selectedEmail.mode === "select" && (
-                            <motion.input
-                              initial={{ opacity: 0 }}
-                              exit={{ opacity: 0 }}
-                              transition={{ duration: 0.2 }}
-                              animate={{ opacity: 1 }}
-                              onChange={(e) => {
-                                handleChange("password", index, e.target.value);
-                              }}
-                              security="true"
-                              className="input-default"
-                              placeholder="Enter Password"
-                              defaultValue={i?.password}
-                              ref={(el) =>
-                                (passwordInputRefs.current[index] = el)
-                              }
-                            ></motion.input>
-                          )}
-                        {selectedEmail.index === index &&
-                          selectedEmail.mode === "edit" && (
-                            <>
+                                  <img
+                                    src="/svg/trash.svg"
+                                    className="h-4 w-4 mr-1"
+                                  />
+                                  <p
+                                    style={{
+                                      fontSize: "12px",
+                                      fontWeight: "500",
+                                      letterSpacing: "-0.12px",
+                                    }}
+                                  >
+                                    Delete
+                                  </p>
+                                </MenuItem>
+                              </Menu>
+                            </div>
+                          </motion.div>
+                          {selectedEmail.index === index &&
+                            selectedEmail.mode === "select" && (
                               <motion.input
                                 initial={{ opacity: 0 }}
                                 exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
+                                transition={{ duration: 0.3 }}
                                 animate={{ opacity: 1 }}
-                                className="input-default mt-3"
-                                placeholder="Email"
-                                ref={(el) =>
-                                  (emailEditRefs.current[index] = el)
-                                }
-                                defaultValue={i.emailAddress}
                                 onChange={(e) => {
                                   handleChange(
-                                    "emailAddress",
+                                    "password",
                                     index,
                                     e.target.value
                                   );
                                 }}
-                                disabled
+                                security="true"
+                                className="input-default"
+                                placeholder="Enter Password"
+                                defaultValue={i?.password}
+                                ref={(el) =>
+                                  (passwordInputRefs.current[index] = el)
+                                }
                               ></motion.input>
-                              <motion.input
-                                initial={{ opacity: 0 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                                animate={{ opacity: 1 }}
-                                className="input-default mt-3"
-                                placeholder="Host"
-                                ref={(el) => (hostEditRefs.current[index] = el)}
-                                defaultValue={i.host}
-                                onChange={(e) => {
-                                  handleChange("host", index, e.target.value);
-                                }}
-                              ></motion.input>
-                              <motion.input
-                                initial={{ opacity: 0 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                                animate={{ opacity: 1 }}
-                                className="input-default mt-3"
-                                placeholder="Port"
-                                defaultValue={i.port}
-                                ref={(el) => (portEditRefs.current[index] = el)}
-                                type="number"
-                                onChange={(e) => {
-                                  handleChange("port", index, e.target.value);
-                                }}
-                              ></motion.input>
-                            </>
-                          )}
-                      </>
-                    );
-                  })}
-                  <motion.div
-                    custom={-1}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    initial={{
-                      opacity: 1,
-                      height: 71,
-                    }}
-                    animate={{
-                      opacity:
-                        selectedEmail.index === undefined ||
-                        selectedEmail.index === -1
-                          ? 1
-                          : 0,
-                      height:
-                        selectedEmail.index === undefined ||
-                        selectedEmail.index === -1
-                          ? 71
-                          : 0,
-                      marginBottom:
-                        selectedEmail.index === undefined ||
-                        selectedEmail.index === -1
-                          ? "10px"
-                          : 0,
-                    }}
-                    layout
-                    key={"add-email"}
-                    className="home_email-option-container"
-                    onClick={() => Router.push("/accounts/link")}
-                  >
-                    <div className="flex flex-row items-center">
-                      <div
-                        className=" h-10 w-10 flex justify-center items-center"
-                        style={{
-                          borderRadius: "20px",
-                          marginRight: "15px",
-                          backgroundColor: colors.light200,
+                            )}
+                          {selectedEmail.index === index &&
+                            selectedEmail.mode === "edit" && (
+                              <>
+                                <motion.input
+                                  initial={{ opacity: 0 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{ duration: 0.3 }}
+                                  animate={{ opacity: 1 }}
+                                  className="input-default mt-3"
+                                  placeholder="Email"
+                                  ref={(el) =>
+                                    (emailEditRefs.current[index] = el)
+                                  }
+                                  defaultValue={i.emailAddress}
+                                  onChange={(e) => {
+                                    handleChange(
+                                      "emailAddress",
+                                      index,
+                                      e.target.value
+                                    );
+                                  }}
+                                  disabled
+                                ></motion.input>
+                                <motion.input
+                                  initial={{ opacity: 0 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{ duration: 0.3 }}
+                                  animate={{ opacity: 1 }}
+                                  className="input-default mt-3"
+                                  placeholder="Host"
+                                  ref={(el) =>
+                                    (hostEditRefs.current[index] = el)
+                                  }
+                                  defaultValue={i.host}
+                                  onChange={(e) => {
+                                    handleChange("host", index, e.target.value);
+                                  }}
+                                ></motion.input>
+                                <motion.input
+                                  initial={{ opacity: 0 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{ duration: 0.3 }}
+                                  animate={{ opacity: 1 }}
+                                  className="input-default mt-3"
+                                  placeholder="Port"
+                                  defaultValue={i.port}
+                                  ref={(el) =>
+                                    (portEditRefs.current[index] = el)
+                                  }
+                                  type="number"
+                                  onChange={(e) => {
+                                    handleChange("port", index, e.target.value);
+                                  }}
+                                ></motion.input>
+                              </>
+                            )}
+                        </>
+                      );
+                    })}
+                    {selectedEmail.mode === undefined && (
+                      <motion.div
+                        custom={-1}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        initial={{
+                          opacity: 1,
+                          height: 71,
                         }}
+                        animate={{
+                          opacity:
+                            selectedEmail.index === undefined ||
+                            selectedEmail.index === -1
+                              ? 1
+                              : 0,
+                          height:
+                            selectedEmail.index === undefined ||
+                            selectedEmail.index === -1
+                              ? 71
+                              : 0,
+                          marginBottom:
+                            selectedEmail.index === undefined ||
+                            selectedEmail.index === -1
+                              ? "10px"
+                              : 0,
+                        }}
+                        layout
+                        key={"add-email"}
+                        className="home_email-option-container"
+                        onClick={() => Router.push("/accounts/link")}
                       >
-                        <img src="/svg/plus.svg" className="h-6 w-6" />
-                      </div>
-                      <div className="flex-col flex">
-                        <p
-                          style={{
-                            fontSize: "16px",
-                            fontWeight: "600",
-                          }}
-                        >
-                          Add Email Account
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: "500",
-                            color: colors.light300,
-                          }}
-                        >
-                          Link another email address
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
+                        <div className="flex flex-row items-center">
+                          <div
+                            className=" h-10 w-10 flex justify-center items-center"
+                            style={{
+                              borderRadius: "20px",
+                              marginRight: "15px",
+                              backgroundColor: colors.light200,
+                            }}
+                          >
+                            <img src="/svg/plus.svg" className="h-6 w-6" />
+                          </div>
+                          <div className="flex-col flex">
+                            <p
+                              style={{
+                                fontSize: "14px",
+                                fontWeight: "600",
+                              }}
+                            >
+                              Add Email Account
+                            </p>
+                            <p
+                              style={{
+                                fontSize: "13px",
+                                fontWeight: "500",
+                                color: colors.light300,
+                              }}
+                            >
+                              Link another email address
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                </AnimatePresence>
                 <div className="flex flex-row mt-5">
                   <Button
                     title="Back"
@@ -712,7 +729,7 @@ export const Step3 = () => {
                     disabled={continueDisabled}
                   />
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>

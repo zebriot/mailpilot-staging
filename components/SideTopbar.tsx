@@ -57,6 +57,7 @@ const SideTopbar = ({ children }) => {
   ];
   const [toggleCollapse, setToggleCollapse] = useState(false);
   const [isCollapsible, setIsCollapsible] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const router = useRouter();
 
@@ -66,21 +67,21 @@ const SideTopbar = ({ children }) => {
   );
 
   const wrapperClasses = classNames(
-    "h-full px-4 pt-8 pb-4 bg-light flex justify-between flex-col sidebar-content-container",
+    "h-full px-3 pt-6 pb-4 bg-light flex justify-between flex-col sidebar-content-container",
     {
-      ["w-80"]: !toggleCollapse,
-      ["w-20"]: toggleCollapse,
+      ["w-64"]: !toggleCollapse,
+      ["w-[64px]"]: toggleCollapse,
     }
   );
 
-  const collapseIconClasses = classNames("p-4 rounded absolute right-0");
+  const collapseIconClasses = classNames("p-3 rounded absolute right-0");
 
   const getNavItemClasses = (id) => {
     return classNames(
       "flex items-center cursor-pointer hover:bg-light-lighter w-full overflow-hidden whitespace-nowrap menu sm:menu-collapsed",
       {
         ["active-menu"]: activeMenu?.id === id,
-        ["menu-collapsed"]: !isCollapsible,
+        ["menu-collapsed"]: !toggleCollapse,
       }
     );
   };
@@ -110,9 +111,7 @@ const SideTopbar = ({ children }) => {
 
   if (!activeMenu?.id)
     return (
-      <div className="h-full w-screen flex-row flex flex-1 ">
-        {children}
-      </div>
+      <div className="h-full w-screen flex-row flex flex-1 ">{children}</div>
     );
 
   return (
@@ -146,7 +145,7 @@ const SideTopbar = ({ children }) => {
                 {/* <CollapsIcon /> */}
                 <img
                   src={
-                    isCollapsible
+                    toggleCollapse
                       ? "/svg/close-drawer.svg"
                       : "/svg/open-drawer.svg"
                   }
@@ -155,19 +154,22 @@ const SideTopbar = ({ children }) => {
               </button>
             </div>
 
-            <div className="flex flex-col items-start mt-24">
+            <div className="flex flex-col items-start mt-[76px]">
               {menuItems.map(({ iconSrc, ...menu }) => {
                 const classes = getNavItemClasses(menu.id);
                 return (
                   <>
                     <div
                       className={classes}
-                      onClick={() => router.push(menu.navigateTo)}
+                      onClick={() => {
+                        router.push(menu.navigateTo);
+                        // !toggleCollapse && handleSidebarToggle();
+                      }}
                     >
                       {/* <Link href={menu.link}> */}
-                      <div className="flex py-4 px-3 items-center w-full h-14">
-                        <div style={{ width: "2.5rem" }}>
-                          <img src={iconSrc} className="w-6 h-6" />
+                      <div className="flex py-3 px-[10px] items-center w-full h-[45px]">
+                        <div style={{ width: "2rem" }}>
+                          <img src={iconSrc} className="w-[19px] h-[19px]" />
                         </div>
                         <span
                           className={classNames(
@@ -175,7 +177,7 @@ const SideTopbar = ({ children }) => {
                           )}
                           style={{
                             opacity: toggleCollapse ? 0 : 1,
-                            fontSize: toggleCollapse ? 0 : "16px",
+                            fontSize: toggleCollapse ? 0 : "13px",
                           }}
                         >
                           {menu.label}
@@ -220,16 +222,19 @@ const SideTopbar = ({ children }) => {
             }}
           >
             <div
-              className={`flex flex-row items-center mt-5 transition-all duration-500 `}
+              className={`flex flex-row items-center mt-4 transition-all duration-500 `}
             >
-              <img src="/svg/help-circle.svg" className="h-6 w-6 mr-2" />
+              <img
+                src="/svg/help-circle.svg"
+                className="h-[19px] w-[19px] mr-2"
+              />
               {/* {!toggleCollapse && ( */}
               <p
                 className={"transition-all duration-100"}
                 style={{
                   color: colors.dark100,
                   textShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-                  fontSize: !toggleCollapse ? "14px" : 0,
+                  fontSize: !toggleCollapse ? "12px" : 0,
                   opacity: !toggleCollapse ? 1 : 0,
                   fontFamily: "Inter",
                   fontWeight: "500",
@@ -239,34 +244,45 @@ const SideTopbar = ({ children }) => {
               </p>
               {/* )} */}
             </div>
-            {/* <div
-              style={{
-                borderRadius: "100px",
-                height: "40px",
-                width: "100%",
-                backgroundColo r: "#EFEFEF",
-              }}
-            ></div> */}
           </div>
         </div>
       </div>
       <div className="flex flex-1 flex-col sidetopbar-container ">
         <div className="sidetopbar-content-container ">
-          <div className="sidebar_search-container">
-            <img src="/svg/search.svg" className=" h-6 w-6" />
+          <div
+            className="sidebar_search-container"
+            style={{
+              backgroundColor: isSearchFocused ? colors.primary50 : "#F5F5F5",
+              borderWidth: "1px",
+              borderColor: isSearchFocused
+                ? colors.primary
+                : colors.transparent,
+            }}
+          >
+            <img src="/svg/search.svg" className=" h-[19px] w-[19px" />
             <input
               id="search"
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
               className="sidebar_search-input"
               placeholder="Search or type a command"
-              style={{ backgroundColor: "#F5F5F5" }}
+              style={{
+                backgroundColor: colors.transparent,
+                fontStyle: "normal",
+                fontSize: "13px",
+                lineHeight: "16px",
+                display: "flex",
+                alignItems: "center",
+                color: "#171821",
+              }}
             />
-            <div className=" px-5 py-2 bg-white rounded-lg">
+            <div className="px-4 py-2 bg-white rounded-lg">
               <p
                 style={{
                   fontStyle: "normal",
                   fontWeight: "600",
-                  fontSize: "16px",
-                  lineHeight: "19px",
+                  fontSize: "15px",
+                  lineHeight: "18px",
                   display: "flex",
                   alignItems: "center",
                   color: "#171821",
@@ -287,10 +303,10 @@ const SideTopbar = ({ children }) => {
             />
 
             {/* User's Messages , use text-1 as src for unread*/}
-            <img src="/svg/text-0.svg" className=" h-7 w-7 mr-10" />
+            <img src="/svg/text-0.svg" className=" h-[22px] w-[22px] mr-8" />
 
             {/* User's Notification , use bell-1 as src for unread */}
-            <img src="/svg/bell-0.svg" className=" h-7 w-7 mr-10" />
+            <img src="/svg/bell-0.svg" className=" h-[22px] w-[22px] mr-8" />
 
             {/* User's Organisation */}
             <div className="sidebar_org-container mr-3">
@@ -302,16 +318,16 @@ const SideTopbar = ({ children }) => {
             >
               {/* User's Profile Image */}
               <img
-                className="h-12 w-12 mr-3 "
-                style={{ borderRadius: "24px" }}
+                className="h-10 w-10 mr-3 "
+                style={{ borderRadius: "20px" }}
                 src={user?.photoUrl}
               />
               {/* User's name */}
               <p
                 style={{
                   fontWeight: "600",
-                  fontSize: "18px",
-                  lineHeight: "22px",
+                  fontSize: "15px",
+                  lineHeight: "28px",
                   display: "flex",
                   alignItems: "center",
                   color: "#000000",

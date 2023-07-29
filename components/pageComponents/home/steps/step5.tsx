@@ -35,6 +35,8 @@ const htmlToDraft =
 // const draftToHtml =
 //   typeof window === "object" && require("draftjs-to-html").default;
 import draftToHtml from "draftjs-to-html";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 // import htmlToDraft from "html-to-draftjs";
@@ -196,72 +198,70 @@ export const Step5 = () => {
   if (typeof window === "undefined") return null;
 
   return (
-    <div
-      className="flex flex-col "
-      style={{ height: "calc(100vh - 350px)" }}
-    >
-      <div className="home_mail-content-container mt-5 flex-1 flex flex-col ">
+    <div className="flex flex-col" style={{ height: "calc(100vh - 300px)" }}>
+      <div className="home_mail-content-container mt-4 flex-1 flex flex-col ">
         <div
-          className="border-bottom-light items-center flex flex-row px-7 mt-1"
-          style={{ paddingBlock: "12px" }}
+          className="border-bottom-light items-center flex flex-row px-5 mt-1"
+          style={{ paddingBlock: "10px" }}
         >
           <div className="flex flex-1 flex-row items-center">
             <p
               className="flex flex-1"
               style={{
                 color: colors.light300,
-                fontSize: "18px",
+                fontSize: "14.5px",
                 fontWeight: "500",
               }}
             >
               Subject:{" "}
               <input
-                className="ml-2 outline-none w-full"
+                aria-expanded={false}
+                className="mx-2 outline-none w-full"
                 style={{ color: colors.blackLogo, fontWeight: "600" }}
                 onChange={(e) => onSubjectChange(e.target.value)}
                 value={subject}
               ></input>
             </p>
             <div className="flex items-center cursor-pointer">
-            <img
-              className="h-6 w-6 mr-2"
-              src="/svg/copy.svg"
-              onClick={onCopy}
-            />
-            <p
-              onClick={onCopy}
-              style={{
-                fontSize: "18px",
-                fontFamily: "Inter",
-                fontStyle: "normal",
-                fontWeight: "600",
-                lineHeight: "normal",
-                color: colors.primary,
-              }}
-              className="transition-all"
-            >
-              {copiedIndex === undefined ? "Copy" : "Copied"}
-            </p>
+              <img
+                className="h-6 w-6 mr-2"
+                src="/svg/copy.svg"
+                onClick={onCopy}
+              />
+              <p
+                onClick={onCopy}
+                style={{
+                  fontSize: "14.5px",
+                  fontFamily: "Inter",
+                  fontStyle: "normal",
+                  fontWeight: "600",
+                  lineHeight: "normal",
+                  color: colors.primary,
+                }}
+                className="transition-all"
+              >
+                {copiedIndex === undefined ? "Copy" : "Copied"}
+              </p>
             </div>
           </div>
           <img
             src="/svg/vertical-line.svg"
-            style={{ height: "26px", width: "2px", marginInline: "20px" }}
+            style={{ height: "21px", width: "2px", marginInline: "16px" }}
           />
-          <Button
+          {/* <Button
             disabled={currentlyRegenerating !== undefined}
             loading={index === currentlyRegenerating}
             title="Regenerate"
             iconSrc="/svg/refresh.svg"
             preset="primary"
-            iconStyle={{ height: "30px", width: "30px" }}
+            iconStyle={{ height: "24px", width: "24px" }}
             onPress={regenerateEmailAtIndex}
-            containerStyle={{ width: "190px" }}
+            containerStyle={{ width: "140px" }}
           />
           <img
             src="/svg/vertical-line.svg"
-            style={{ height: "26px", width: "2px", marginInline: "20px" }}
-          />
+            style={{ height: "21px", width: "2px", marginInline: "16px" }}
+          /> */}
           <Button
             disabled={currentlySending !== undefined}
             loading={index === currentlySending}
@@ -269,57 +269,67 @@ export const Step5 = () => {
             iconSrc="/svg/send-white.svg"
             onPress={send}
             preset="primary"
+            containerStyle={{ width: "95px" }}
           />
         </div>
-        <div className="flex flex-row my-0 flex-1 overflow-auto z-1 relative  ">
+        <SimpleBar
+          forceVisible
+          className="flex flex-row my-0 flex-1 overflow-auto z-1 relative flex-grow flex-shrink relative"
+        >
           <Editor
             editorState={editorState}
             onEditorStateChange={onEditorStateChange}
             wrapperStyle={{
               height: "100%",
               padding: 0,
+              margin: 0,
             }}
             editorStyle={{ padding: 0, zIndex: 0 }}
             editorClassName="p-0 m-0"
             toolbarHidden
           />
-        </div>
+        </SimpleBar>
         <div
-          className="items-center flex flex-row px-7 border-top-light"
-          style={{ height: "60px", marginTop: 0 }}
+          className="items-center flex flex-row px-5 border-top-light"
+          style={{ height: "50px", marginTop: 0 }}
         >
-          <img src="/svg/eye.svg" className="w-4 h-4 cursor-pointer" />
-          <img src="/svg/vertical-line.svg" className="w-1 h-7 mx-4 " />
+          <img
+            src="/svg/eye.svg"
+            className="w-[13px] h-[13px] cursor-pointer"
+          />
+          <img
+            src="/svg/vertical-line.svg"
+            className="w-[3px] h-6 mx-[13px] "
+          />
           <img
             src="/svg/bold.svg"
             onClick={onStyleClick}
-            className="w-6 h-6 cursor-pointer"
+            className="w-[19px] h-[19px] cursor-pointer"
             id="BOLD"
           />
           <img
             src="/svg/italic.svg"
             onClick={onStyleClick}
-            className="w-6 h-6 mx-4 cursor-pointer"
+            className="w-19px h-19px mx-[13px] cursor-pointer"
             id="ITALIC"
           />
-          <img src="/svg/font.svg" className="w-5 h-5 cursor-pointer" />
-          <img src="/svg/vertical-line.svg" className="w-1 h-7 mx-4" />
+          <img src="/svg/font.svg" className="w-4 h-4 cursor-pointer" />
+          <img src="/svg/vertical-line.svg" className="w-[3px] h-6 mx-[13px]" />
           <img
             src="/svg/link-2.svg"
-            className="w-5 h-5 cursor-pointer"
+            className="w-4 h-4 cursor-pointer"
             onClick={addLinkClick}
           />
         </div>
       </div>
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between mt-2">
         <p
           style={{
             fontFamily: "Inter",
             fontWeight: "600",
-            fontSize: "16px",
-            lineHeight: "19px",
+            fontSize: "13px",
+            lineHeight: "16px",
             color: "#98A2B3",
-            marginTop: "10px",
           }}
         >
           {getWordCount(editorState)} Words {String.fromCharCode(0x2022)}{" "}
@@ -329,10 +339,9 @@ export const Step5 = () => {
           style={{
             fontFamily: "Inter",
             fontWeight: "600",
-            fontSize: "16px",
-            lineHeight: "19px",
+            fontSize: "13px",
+            lineHeight: "16px",
             color: "#98A2B3",
-            marginTop: "10px",
           }}
         >
           {index + 1}/{emails?.length}

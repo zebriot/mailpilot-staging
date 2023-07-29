@@ -172,21 +172,21 @@ export const Step2 = () => {
 
   return (
     <div>
-      <p className="header-1 mt-7">Upload Your CSV</p>
+      <p className="header-1 mt-5">Upload Your CSV</p>
       <p className="descriptive-1">Make sure to use the provided template.</p>
       <div ref={drop} className="drag-container" 
               onClick={handleBrowse}
               >
         {over ? (
           <div className="flex align-middle items-center justify-center">
-            <img src="/svg/loader.svg" className="rotating h-40 w-40 " />
+            <img src="/svg/loader.svg" className="rotating h-32 w-32 " />
             {uploading && (
               <p
                 style={{
                   fontFamily: "Inter",
                   fontWeight: "600",
-                  fontSize: "32px",
-                  lineHeight: "39px",
+                  fontSize: "26px",
+                  lineHeight: "32px",
                   color: "#000000",
                   display: "flex",
                   alignItems: "center",
@@ -200,7 +200,7 @@ export const Step2 = () => {
         ) : (
           <>
             <div className="home_upload-cloud-icon-container">
-              <img src="/svg/upload-cloud.svg" />
+              <img src="/svg/upload-cloud.svg" className='h-5 w-5' />
             </div>
             {/* <p
               style={{
@@ -217,8 +217,8 @@ export const Step2 = () => {
               style={{
                 fontFamily: "Inter",
                 fontWeight: "500",
-                fontSize: "16px",
-                lineHeight: "24px",
+                fontSize: "13px",
+                lineHeight: "19px",
                 color: "#98A2B3",
                 textAlign: "center",
                 letterSpacing: "-0.16px",
@@ -235,14 +235,14 @@ export const Step2 = () => {
       </div>
       {file?.name && (
         <div className="home-step-uploaded-csv-container relative">
-          <img src="/svg/csv-format.svg" className=" h-10 w-10 mr-3" />
+          <img src="/svg/csv-format.svg" className=" h-8 w-8 mr-3" />
           <div>
             <p
               style={{
                 fontFamily: "Inter",
                 fontWeight: "500",
-                fontSize: "16px",
-                lineHeight: "24px",
+                fontSize: "13px",
+                lineHeight: "19px",
                 color: "#101828",
               }}
             >
@@ -252,8 +252,8 @@ export const Step2 = () => {
               style={{
                 fontFamily: "Inter",
                 fontWeight: "500",
-                fontSize: "14px",
-                lineHeight: "20px",
+                fontSize: "11px",
+                lineHeight: "15px",
                 color: "#98A2B3",
               }}
             >
@@ -262,7 +262,7 @@ export const Step2 = () => {
           </div>
           <img
             src="/svg/x.svg"
-            className=" absolute right-3 w-7 h-7 cursor-pointer"
+            className=" absolute right-3 w-5 h-5 cursor-pointer"
             onClick={resetCSV}
           />
         </div>

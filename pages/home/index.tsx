@@ -101,7 +101,7 @@ const HomeScreen = () => {
         />
         <CurrentStep currentStep={step as HomeSteps} />
       </div>
-      <div className="home-side-image-container hidden 2xl:flex">
+    <div className="home-side-image-container hidden lg:flex">
         <img
           src="/svg/home-side-vector.svg"
           className="flex flex-1 w-auto   resize-none"

@@ -23,7 +23,7 @@ export const DropDown = forwardRef<any, StateManagerProps>((props, ref) => {
           borderWidth: "1px",
           borderRadius: "12px",
           backgroundColor: colors.neutral100,
-          height: 17 + 14 + 14,
+          height: 14 + 11 + 10,
           paddingInline: 20,
           alignItems: "center",
           display: "flex",
@@ -39,7 +39,7 @@ export const DropDown = forwardRef<any, StateManagerProps>((props, ref) => {
         }),
         menuList: (base, _props) => ({
           ...base,
-          width: "290px",
+          width: "232px",
         }),
         option: (base, _props) => ({
           ...base,
@@ -51,7 +51,7 @@ export const DropDown = forwardRef<any, StateManagerProps>((props, ref) => {
           bordeColor: colors.light200,
           paddingInline: "10px",
           paddingBlock: "5px",
-          width: "290px",
+          width: "232px",
         }),
         ...styles,
       }}

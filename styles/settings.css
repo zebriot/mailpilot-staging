@@ -4,12 +4,12 @@
     height: 100%;
     border-radius: 30px;
     gap: 10px;
-    height: calc(100vh - 265px);
+    height: calc(100vh - 200px);
 }
 
 .account__settings__toolbar {
     position: fixed;
-    top: calc(100vh - 260px);
+    top: calc(100vh - 200px);
     background-color: #FFFFFF;
     display: flex;
 }

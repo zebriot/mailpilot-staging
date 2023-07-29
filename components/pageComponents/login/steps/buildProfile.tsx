@@ -9,6 +9,8 @@ import firebase from "firebase/compat/app";
 import { useLoader } from "../../../../utils/providers";
 import Router from "next/router";
 import { useAppSelector } from "../../../../redux/store";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
 export const BuildProfile = () => {
   const currentUser = firebase.auth().currentUser;
@@ -105,12 +107,13 @@ export const BuildProfile = () => {
   return (
     <>
       <div className="content-child-container-pre-login">
-        <p className="text-5xl mt-12 mb-6 text-center font-medium">
+        <p className="text-4xl mt-10 mb-5 text-center font-medium">
           🛠️️ We’ll need you to
           <br />
           build your profile
         </p>
-        <div className="flex-1 mb-2 w-full">
+        {/* // padding and margin are just to move the scroll bar a bit to the right */}
+        <SimpleBar  className="mb-2 w-full h-full overflow-auto pr-5 mr-[-20px]" >
           <div className="flex-row flex w-full">
             <Input
               containerClass="mr-2"
@@ -122,7 +125,7 @@ export const BuildProfile = () => {
             />
             <Input
               containerClass="ml-2"
-              label="What’s your job title??"
+              label="What’s your job title?"
               placeholder="Job Title"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
@@ -139,11 +142,9 @@ export const BuildProfile = () => {
           <TagInput
             tags={descriptionTags}
             setTags={(e) => {
-              if (descriptionTags?.length < 4) {
-                setDescriptionTags(e);
-              } else {
-              }
+              setDescriptionTags(e);
             }}
+            maxTagLength={4}
             label="How would you describe yourself?"
             placeholder="Start typing to select keywords..."
             error={errors.tags}
@@ -155,7 +156,7 @@ export const BuildProfile = () => {
             placeholder="Eg: A creative branding and development agency with a focus on web3 and AI"
             error={errors.companyDescription}
           />
-        </div>
+        </SimpleBar>
         <Button
           onPress={onSave}
           loading={buttonLoading}

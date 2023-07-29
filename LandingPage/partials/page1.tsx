@@ -154,8 +154,8 @@ export const Page1 = ({ scrollY, openJoinBetaModal }) => {
       <div className="landing_page1__container relative" ref={ref}>
         {data.map((i, index) => (
           <motion.img
-          // drag
-          // draggable
+            // drag
+            // draggable
             transition={{ type: "spring" }}
             variants={imgVariants}
             initial="initial"

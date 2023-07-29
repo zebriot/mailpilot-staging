@@ -67,15 +67,14 @@ const LinkedAccounts = () => {
             title="Add New"
             onPress={handleAddNew}
             iconSrc={"/svg/link-black.svg"}
-            iconStyle={{ height: "24px", width: "24px" }}
           />
         </div>
       </div>
       {!linkedEmails?.length ? (
         <div className="content-container">
-          <img src="/svg/add-email-vector.svg" className="h-96 w-96" />
-          <p className="header-2 mt-14 mb-7">
-            <span className="text-4xl mr-3">👋</span> Add an email account to
+          <img src="/svg/add-email-vector.svg" className=" h-72 w-72" />
+          <p className="header-2 mt-11 mb-5">
+            <span className="text-3xl mr-2">👋</span> Add an email account to
             get started.
           </p>
           <Button
@@ -91,8 +90,8 @@ const LinkedAccounts = () => {
             <div className="accounts_email-list-item-container justify-between">
               <p
                 style={{
-                  fontSize: "18px",
-                  lineHeight: "22px",
+                  fontSize: "14.5px",
+                  lineHeight: "18px",
                   fontWeight: "600",
                   color: "#000",
                 }}
@@ -107,7 +106,7 @@ const LinkedAccounts = () => {
                     <img
                       onClick={(e) => e.stopPropagation()}
                       src="/svg/more-gray.svg"
-                      className="h-6 w-6  cursor-pointer"
+                      className="h-[19px] w-[19px] cursor-pointer"
                     />
                   }
                 >
@@ -160,12 +159,11 @@ const LinkedAccounts = () => {
         setOpen={setEditModalOpen}
         open={editModalOpen}
       />
-       <DeleteAccountModal
+      <DeleteAccountModal
         account={selectedAccount}
         setOpen={setDeleteModalOpen}
         open={deleteModalOpen}
       />
-      
     </div>
   );
 };

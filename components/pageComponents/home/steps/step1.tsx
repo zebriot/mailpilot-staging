@@ -12,8 +12,8 @@ import { HomeSteps } from "../../../../pages/home";
 
 const SelectedCheck = () => {
   return (
-    <div className="flex h-8 w-8 rounded-lg bg-neutral100 items-center justify-center absolute right-4 top-4">
-      <img src="/svg/tick-black.svg" className="h-4 w-4" />
+    <div className="flex h-[26px] w-[26px] rounded-lg bg-neutral100 items-center justify-center absolute right-4 top-4">
+      <img src="/svg/tick-black.svg" className="h-[13px] w-[13px]" />
     </div>
   );
 };
@@ -41,8 +41,8 @@ export const Step1 = () => {
   console.log("SELECTED PURPOSE : ", selectedPurpose);
 
   return (
-    <div className="">
-      <p className="header-1 mt-7">Select Email Type</p>
+    <div>
+      <p className="header-1 mt-5">Select Email Type</p>
       <p className="descriptive-1">
         Begin from scratch or view drafts & saved templates.
       </p>
@@ -57,15 +57,15 @@ export const Step1 = () => {
             src={`/svg/campaign-${
               selectedPurpose === PurposeType.campaign ? "white" : "primary"
             }.svg`}
-            className="h-20 w-20"
+            className="h-16 w-16"
           />
           <p
             style={{
-              marginTop: "20px",
+              marginTop: "16px",
               fontFamily: "Inter",
               fontWeight: "600",
-              fontSize: "20px",
-              lineHeight: "24px",
+              fontSize: "16px",
+              lineHeight: "19px",
               color:
                 selectedPurpose === PurposeType.campaign
                   ? "#fff"
@@ -86,19 +86,19 @@ export const Step1 = () => {
             src={`/svg/cursor-click-${
               selectedPurpose === PurposeType.editEmails ? "white" : "primary"
             }.svg`}
-            className="h-20 w-20"
+            className="h-16 w-16"
           />
           <p
             style={{
-              marginTop: "20px",
               color:
                 selectedPurpose === PurposeType.editEmails
                   ? "#fff"
                   : colors.blackLogo,
+              marginTop: "16px",
               fontFamily: "Inter",
               fontWeight: "600",
-              fontSize: "20px",
-              lineHeight: "24px",
+              fontSize: "16px",
+              lineHeight: "19px",
             }}
           >
             {PurposeType.editEmails}
@@ -110,7 +110,7 @@ export const Step1 = () => {
             style={{
               fontFamily: "Inter",
               fontWeight: "600",
-              fontSize: "70px",
+              fontSize: "56px",
               lineHeight: "85px",
               textAlign: "center",
             }}
@@ -119,13 +119,13 @@ export const Step1 = () => {
           </p>
           <p
             style={{
-              marginTop: "10px",
+              marginTop: "8px",
               color: "#000",
               fontFamily: "Inter",
               fontWeight: "600",
-              fontSize: "20px",
-              lineHeight: "24px",
               textAlign: "center",
+              fontSize: "16px",
+              lineHeight: "19px",
             }}
           >
             A LOT more
@@ -135,14 +135,19 @@ export const Step1 = () => {
         </div>
       </div>
 
-      <div className="flex flex-row mt-5">
+      <div className="flex flex-row mt-4">
         {/* <Button
           title="Cancel"
           iconSrc="/svg/arrow-left.svg"
           preset="secondary"
           containerStyle={{ marginRight: "20px" }}
         /> */}
-        <Button title="Continue" preset="primary" onPress={next} disabled={selectedPurpose === PurposeType.null} />
+        <Button
+          title="Continue"
+          preset="primary"
+          onPress={next}
+          disabled={selectedPurpose === PurposeType.null}
+        />
       </div>
     </div>
   );

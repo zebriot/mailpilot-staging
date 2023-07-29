@@ -18,6 +18,8 @@ firebase.initializeApp(firebaseConfig);
 
 let lastTimeoutId: any;
 
+const preLoginRoutes = ["/", "/about",'/tnc','/privacy'];
+
 export default function MyApp({ Component, pageProps }) {
   return (
     <LoaderProvider>
@@ -36,7 +38,7 @@ const MailPilot = ({ Component, pageProps }) => {
   useEffect(() => {
     auth.onAuthStateChanged(async function (user) {
       console.log("CHANGE IN AUTH STATE");
-      if (router.route === "/") {
+      if (preLoginRoutes.includes(router.route)) {
         stopLoader();
         return;
       }
@@ -76,7 +78,14 @@ const MailPilot = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
+        <title>Mail Pilot</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        ></link>
       </Head>
       <Provider store={store}>
         <ToastProvider>

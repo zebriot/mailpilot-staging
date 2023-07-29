@@ -123,8 +123,9 @@
 
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 768px) {
-   /* For TABLETS: */
-   .col-m-1 {
+
+  /* For TABLETS: */
+  .col-m-1 {
     width: 8.33%;
   }
 
@@ -175,8 +176,9 @@
 
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
-   /* For desktop: */
-   .col-d-1 {
+
+  /* For desktop: */
+  .col-d-1 {
     width: 8.33%;
   }
 
@@ -226,9 +228,7 @@
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {
-
-}
+@media only screen and (min-width: 1200px) {}
 
 html,
 
@@ -248,7 +248,7 @@ body {
   margin: 0;
   font-family: "Inter";
   line-height: 1.6;
-  font-size: 16px;
+  font-size: 13px;
   display: "flexbox";
   height: 100vh;
   background-color: #f5f5f5;
@@ -258,7 +258,7 @@ body {
 
 .body-text-xl {
   font-family: Inter;
-  font-size: 18px;
+  font-size: 14.5px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -267,7 +267,7 @@ body {
 
 .body-text-l {
   font-family: Inter;
-  font-size: 16px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -276,7 +276,7 @@ body {
 
 .body-text-m {
   font-family: Inter;
-  font-size: 14px;
+  font-size: 11.5px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -286,7 +286,7 @@ body {
 .h3 {
   /* Headings/H3 Semi Bold */
   font-family: Inter;
-  font-size: 36px;
+  font-size: 29px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -295,7 +295,7 @@ body {
 
 .h5 {
   font-family: Inter;
-  font-size: 24px;
+  font-size: 19px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -304,7 +304,7 @@ body {
 
 .h6 {
   /* Headings/H6 Semi Bold */
-  font-size: 20px;
+  font-size: 16px;
   font-family: Inter;
   font-style: normal;
   font-weight: 600;
@@ -577,7 +577,8 @@ img {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 60%;
+  width: 70%;
+  height: calc(100vh - 4rem - 120px);
 }
 
 .main-container {
@@ -585,13 +586,19 @@ img {
   height: 100vh;
   background-color: #f5f5f5;
   width: 100%;
-overscroll-behavior: none;
+  overscroll-behavior: none;
 
 }
 
 .logo-default {
-  width: 156px;
+  width: 8vw;
   /* height: auto; */
+}
+
+
+.input-default::placeholder {
+
+  font-size: 14px;
 }
 
 .input-default {
@@ -601,11 +608,12 @@ overscroll-behavior: none;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 14px 20px;
-  gap: 8px;
+  padding: 12px 16px;
+  gap: 7px;
+  font-size: 14px;
 
   width: 100%;
-  height: 52px;
+  height: 42px;
 
   /* Base/White */
   background: #ffffff;
@@ -630,7 +638,7 @@ overscroll-behavior: none;
 
 .text-light {
   color: #7d7d7d;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 500;
   text-align: center;
 }
@@ -655,8 +663,8 @@ overscroll-behavior: none;
 .header-1 {
   font-style: normal;
   font-weight: 600;
-  font-size: 42px;
-  line-height: 51px;
+  font-size: 34px;
+  line-height: 40px;
   display: flex;
   align-items: center;
   color: #000000;
@@ -666,8 +674,8 @@ overscroll-behavior: none;
   font-family: "Inter";
   font-style: normal;
   font-weight: 600;
-  font-size: 24px;
-  line-height: 29px;
+  font-size: 19px;
+  line-height: 24px;
   /* identical to box height */
   display: flex;
   align-items: center;
@@ -678,21 +686,21 @@ overscroll-behavior: none;
   font-family: "Inter";
   font-style: normal;
   font-weight: 500;
-  font-size: 22px;
-  line-height: 27px;
+  font-size: 18px;
+  line-height: 22px;
   display: flex;
   align-items: center;
   color: #72777b;
-  margin-bottom: 30px;
-  margin-top: 20px;
+  margin-bottom: 24px;
+  margin-top: 16px;
 }
 
 .descriptive-2 {
   font-family: "Inter";
   font-style: normal;
   font-weight: 600;
-  font-size: 18px;
-  line-height: 22px;
+  font-size: 14.5px;
+  line-height: 19px;
   /* identical to box height */
   display: flex;
   align-items: center;
@@ -709,16 +717,17 @@ div.DraftEditor-root {
   width: 100%;
   height: 100%;
   padding-inline: 20px;
-  font-size: 18px;
+  font-size: 15px;
   margin: 0px;
   z-index: 10;
   flex-grow: 0;
+  line-height: 1.4;
 }
 
 div.DraftEditor-editorContainer {
   /* margin-top: 40px; */
   /* Body/XL Medium */
-  font-size: 18px;
+  font-size: 15px;
   font-family: Inter;
   flex-direction: column;
   flex-grow: 1;
@@ -732,6 +741,7 @@ div.DraftEditor-editorContainer {
   letter-spacing: -0.18px;
   flex-grow: 0;
   z-index: 1;
+  line-height: 1.4;
 
   position: relative;
 }
@@ -741,6 +751,9 @@ div.public-DraftEditor-content {
   width: 100%;
   overflow-y: scroll;
   overflow-x: scroll;
+  font-size: 15px;
+  line-height: 1.4;
+
   /* overflow: scroll; */
   /* flex-grow: 0; */
   z-index: 1;
@@ -875,4 +888,23 @@ div.toolbar button {
 
 .rdw-editor-main .public-DraftStyleDefault-pre .rdw-linespacing-double {
   line-height: 2;
+}
+
+.simplebar-scrollbar {
+  width: 4px;
+  background-color: #CBCBCB;
+  border-radius: 20px;
+  margin-block: 10px;
+  position: absolute;
+    left: 0;
+    right: -20px;
+    min-height: 10px
+}
+
+.simplebar-scrollbar::before {
+  background-color: #66f;
+  
+  /* height: 0px; */
+  width: 0px;
+
 }

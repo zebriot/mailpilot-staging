@@ -28,6 +28,8 @@ const Editor = dynamic(
 const htmlToDraft =
   typeof window !== "undefined" && require("html-to-draftjs").default;
 import draftToHtml from "draftjs-to-html";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
 let lastTimeoutId;
 
@@ -36,11 +38,11 @@ export const Profile = () => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   return (
     <>
-      <div className="accounts_settings__profile-display-container mt-5">
+      <div className="accounts_settings__profile-display-container mt-4">
         <div className="flex flex-row align-middle">
           <img
             src={user.photoUrl}
-            style={{ height: "72px", width: "72px", borderRadius: "36px" }}
+            style={{ height: "58px", width: "58px", borderRadius: "29px" }}
           />
           <div className="ml-5 justify-center flex flex-col gap-2">
             <p className="h6">{user.name}</p>
@@ -71,6 +73,7 @@ const EmailSignatures = () => {
   const [editing, setEditing] = useState<number | undefined>(undefined);
   const [deleting, setDeleting] = useState<number | undefined>(undefined);
   const [signatures, setSignatures] = useState(savedSignatures || []);
+  const [savingSignatures, setSavingSignatures] = useState(false);
   const [sigDefaults, setSigDefaults] = useState(
     signatureDefaults || {
       forNewEmails: "",
@@ -92,16 +95,12 @@ const EmailSignatures = () => {
   const { addToast } = useToast();
 
   const updateSignaturesToDatabase = async () => {
+    lastTimeoutId && setSavingSignatures(true);
     clearTimeout(lastTimeoutId);
     const timeoutId = setTimeout(async () => {
       await updateUser({ signatures });
-      lastTimeoutId &&
-        addToast({
-          appearance: "success",
-          title: "Saved",
-          message: "Your Signature config was saved successfully",
-        });
-    }, 3500);
+      setSavingSignatures(false);
+    }, 2000);
     lastTimeoutId = timeoutId;
   };
 
@@ -294,10 +293,8 @@ const EmailSignatures = () => {
         Email Signatures
       </p>
       <div
-        className="basic-border-outline flex flex-row flex-1"
-        style={{ padding: 0, 
-          // height: 300 
-        }}
+        className="basic-border-outline flex flex-row "
+        style={{ padding: 0, height: "calc(100vh - 565px)" }}
       >
         <div
           style={{
@@ -309,7 +306,7 @@ const EmailSignatures = () => {
         >
           <div
             className="flex flex-col flex-1 overflow-auto"
-            style={{ width: "300px" }}
+            style={{ width: "240px" }}
           >
             {signatures.map((i, index) => (
               <div
@@ -320,7 +317,7 @@ const EmailSignatures = () => {
                   setNewSignature(false);
                   setDeleting(undefined);
                 }}
-                className="p-5 transition-all cursor-pointer duration-200 flex flex-row justify-between parent__internal-div-visible"
+                className="p-4 transition-all cursor-pointer duration-200 flex flex-row justify-between parent__internal-div-visible"
                 style={{
                   backgroundColor:
                     index === deleting
@@ -409,10 +406,10 @@ const EmailSignatures = () => {
                   }}
                   ref={newSigRef}
                   placeholder="New Signature"
-                  className="body-text-l outline-none p-5 w-full"
+                  className="body-text-l outline-none p-4 w-full"
                   style={{ backgroundColor: colors.transparent }}
                   value={newSigState.title}
-                  maxLength={30}
+                  maxLength={20}
                   onChange={(e) => {
                     setNewSigState((prev) => ({
                       ...prev,
@@ -487,55 +484,62 @@ const EmailSignatures = () => {
           </div>
         </div>
         <div className="flex flex-1 flex-col ">
-          <div className="flex-box flex-row my-0 flex-1 flex-shrink flex-grow overflow-auto z-1 relative">
+          <SimpleBar
+            forceVisible
+            className="flex flex-row my-0 flex-1 overflow-auto z-1 relative"
+          >
             <Editor
               editorState={editorState}
               onEditorStateChange={handleEditorStateChange}
-              toolbarClassName="account__settings__toolbar"
-              wrapperStyle={{ height: "100%", padding: 0 }}
+              wrapperStyle={{
+                height: "100%",
+                padding: 0,
+                margin: 0,
+                flex: 1,
+                display: "flex",
+              }}
               editorStyle={{ padding: 0, zIndex: 0 }}
-              editorClassName="p-0 m-0"
-              // wrapperClassName=" relative"
+              editorClassName="p-0 m-0 w-full "
               toolbarHidden
-
-              // toolbarStyle={{
-              //   borderWidth: 0,
-              //   borderTopWidth: "1px",
-              //   padding: "10px",
-              //   height: "75px",
-              //   backgroundColor: colors.neutral100,
-              //   borderColor: colors.light200,
-              // }}
             />
-          </div>
+          </SimpleBar>
+
           <div
-            className="items-center flex flex-row px-7"
+            className="items-center flex flex-row px-5"
             style={{
-              height: "60px",
-              marginTop: 0,
+              height: "40px",
               borderTopWidth: "1px",
               borderColor: colors.light200,
             }}
           >
-            <img src="/svg/eye.svg" className="w-4 h-4 cursor-pointer" />
-            <img src="/svg/vertical-line.svg" className="w-1 h-7 mx-4 " />
+            <img
+              src="/svg/eye.svg"
+              className="w-[13px] h-[13px] cursor-pointer"
+            />
+            <img
+              src="/svg/vertical-line.svg"
+              className="w-[3px] h-6 mx-[13px] "
+            />
             <img
               src="/svg/bold.svg"
               onClick={onStyleClick}
-              className="w-6 h-6 cursor-pointer"
+              className="w-[19px] h-[19px] cursor-pointer"
               id="BOLD"
             />
             <img
               src="/svg/italic.svg"
               onClick={onStyleClick}
-              className="w-6 h-6 mx-4 cursor-pointer"
+              className="w-19px h-19px mx-[13px] cursor-pointer"
               id="ITALIC"
             />
-            <img src="/svg/font.svg" className="w-5 h-5 cursor-pointer" />
-            <img src="/svg/vertical-line.svg" className="w-1 h-7 mx-4" />
+            <img src="/svg/font.svg" className="w-4 h-4 cursor-pointer" />
+            <img
+              src="/svg/vertical-line.svg"
+              className="w-[3px] h-6 mx-[13px]"
+            />
             <img
               src="/svg/link-2.svg"
-              className="w-5 h-5 cursor-pointer"
+              className="w-4 h-4 cursor-pointer"
               onClick={handleLinkClick}
             />
             <img src="/svg/vertical-line.svg" className="w-1 h-7 mx-4" />
@@ -565,15 +569,16 @@ const EmailSignatures = () => {
           </div>
         </div>
       </div>
-      <p className="h6" style={{ marginTop: "30px", marginBottom: "20px" }}>
+      <p className="h6" style={{ marginTop: "24px", marginBottom: "16px" }}>
         Signature Defaults
       </p>
-      <div className="flex flex-row gap-5">
+      <div className="flex flex-row gap-4">
         <div className="flex flex-col">
-          <p className="body-text-m" style={{ marginBottom: "10px" }}>
+          <p className="body-text-m" style={{ marginBottom: "8px" }}>
             For New Emails:
           </p>
           <DropDown
+            isClearable
             value={{
               value: sigDefaults.forNewEmails,
               label: sigDefaults.forNewEmails,
@@ -597,6 +602,7 @@ const EmailSignatures = () => {
             For Replies/Forwards:
           </p>
           <DropDown
+            isClearable
             value={{
               value: sigDefaults.forForwards,
               label: sigDefaults.forForwards,

@@ -43,12 +43,12 @@ export const SelectProvider = () => {
       <p
         className="border-bottom-light"
         style={{
-          fontSize: "24px",
-          lineHeight: "44px",
+          fontSize: "19px",
+          lineHeight: "35px",
           textAlign: "center",
           fontWeight: "600",
-          paddingBottom: "20px",
-          paddingInline: "10px",
+          paddingBottom: "16px",
+          paddingInline: "8px",
         }}
       >
         Connect a new email account
@@ -60,12 +60,12 @@ export const SelectProvider = () => {
             className="flex flex-row mt-8 flex-1 items-center p-1 cursor-pointer"
             style={{ opacity: i.disabled ? 0.3 : 1 }}
           >
-            <img src={i.icon} className="h-11 w-11 mr-4" />
+            <img src={i.icon} className="h-9 w-9 mr-3" />
             <div>
               <p
                 style={{
-                  fontSize: "16px",
-                  lineHeight: "24px",
+                  fontSize: "13px",
+                  lineHeight: "19px",
                   fontWeight: "500",
                   color: "#7D7D7D",
                 }}
@@ -74,8 +74,8 @@ export const SelectProvider = () => {
               </p>
               <p
                 style={{
-                  fontSize: "18px",
-                  lineHeight: "24px",
+                  fontSize: "14.5px",
+                  lineHeight: "18px",
                   fontWeight: "600",
                   color: "#000",
                 }}
@@ -87,13 +87,13 @@ export const SelectProvider = () => {
         ))}
       </div>
       <div
-        className=" mt-8 cursor-pointer"
+        className=" mt-[26px] cursor-pointer"
         onClick={() => router.push("/accounts")}
       >
         <p
           style={{
-            fontSize: "16px",
-            lineHeight: "20px",
+            fontSize: "13px",
+            lineHeight: "18px",
             fontWeight: "700",
             color: "#6666FF",
           }}

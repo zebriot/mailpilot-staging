@@ -37,7 +37,7 @@ const TextArea = forwardRef<TextAreaRef, TextAreaProps>(function TextArea(
     <div className={"flex-1 flex flex-col " + containerClass}>
       {label && <p className={"text-sm text-black font-medium mb-1 "+labelClass}>{label}</p>}
       <textarea
-        style={{ borderRadius: "15px", height: 40.5 * rows, resize: "none" }}
+        style={{ borderRadius: "15px", height: 34 * rows, resize: "none" }}
         ref={inputRef}
         className={`input-default ${error && 'invalid'} mt-1 resize-non ${error && 'invalid'}`+ className}
         {...rest}
