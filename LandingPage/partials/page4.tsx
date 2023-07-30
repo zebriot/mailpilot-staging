@@ -3,6 +3,7 @@ import Button from "../../components/button";
 import Page5 from "./page5";
 import {
   AnimatePresence,
+  AnimateSharedLayout,
   MotionValue,
   motion,
   useInView,
@@ -12,6 +13,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { colors } from "../../styles";
+import { wrap } from "@popmotion/popcorn";
 
 let timeoutId;
 let lastIntervalId;
@@ -160,235 +162,163 @@ const LookForwardScrollMD = ({ spring }: { spring: MotionValue<any> }) => {
   );
 };
 
-const LookForwardScrollSM = () => {
-  const [currentSection, setCurrentSection] = useState(0);
-  const lookForwardScrollRef = useRef<HTMLDivElement>(null);
-  const img1 = useRef(null);
-  const img2 = useRef(null);
-  const img3 = useRef(null);
-  const { scrollX, scrollXProgress } = useScroll({
-    container: lookForwardScrollRef,
-  });
-
-  const updateCarouselItem = () => {
-    switch (currentSection) {
-      case 0: {
-        setCurrentSection(1);
-        return;
-      }
-      case 1: {
-        setCurrentSection(2);
-        return;
-      }
-      case 2: {
-        setCurrentSection(0);
-        return;
-      }
-    }
-  };
-
-  useEffect(() => {
-    setInterval(updateCarouselItem, 2000);
-  }, []);
-
-  useMotionValueEvent(scrollX, "change", (latest) => {
-    clearTimeout(timeoutId);
-    const parentWidth = document.getElementById(
-      "lookForwardScrollSM"
-    ).offsetWidth;
-    if (latest < parentWidth / 2) {
-      const id = setTimeout(() => {
-        setCurrentSection(0);
-      }, 50);
-      timeoutId = id;
-      return;
-    }
-
-    if (latest < (parentWidth * 3) / 2) {
-      const id = setTimeout(() => {
-        setCurrentSection(1);
-      }, 50);
-      timeoutId = id;
-      return;
-    }
-
-    const id = setTimeout(() => {
-      setCurrentSection(2);
-    }, 50);
-    timeoutId = id;
-  });
-
-  return (
-    <div className=" relative">
-      <motion.div
-        ref={lookForwardScrollRef}
-        id="lookForwardScrollSM"
-        className="flex flex-row overflow-scroll "
-        style={{ width: "80vw", alignSelf: "center" }}
-      >
-        <motion.img
-          ref={img1}
-          src="/svg/scroll-content-1.svg"
-          style={{
-            width: "80vw",
-            height: "auto",
-            opacity: useTransform(scrollXProgress, [0, 0.5, 1], [1, 0.4, 0.4]),
-          }}
-        />
-        <motion.img
-          ref={img2}
-          src="/svg/scroll-content-2.svg"
-          style={{
-            width: "80vw",
-            height: "auto",
-            opacity: useTransform(scrollXProgress, [0, 0.5, 1], [0.4, 1, 0.4]),
-          }}
-        />
-        <motion.img
-          ref={img3}
-          src="/svg/scroll-content-3.svg"
-          style={{
-            width: "80vw",
-            height: "auto",
-            opacity: useTransform(scrollXProgress, [0, 0.5, 1], [0, 0.4, 1]),
-          }}
-        />
-      </motion.div>
-    </div>
-  );
-};
 let lastCarouselIntervalId;
-const Carousel = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 for right, -1 for left
+const xOffset = 100;
+const variants = {
+  enter: (direction) => ({
+    x: direction > 0 ? xOffset : -xOffset,
+    opacity: 0,
+  }),
+  active: {
+    x: 0,
+    opacity: 1,
+    transition: { delay: 0.2 },
+  },
+  exit: (direction) => ({
+    x: direction > 0 ? -xOffset : xOffset,
+    opacity: 0,
+  }),
+};
+const pages = [
+  { page: 0, src: "/svg/scroll-content-1.svg" },
+  { page: 1, src: "/svg/scroll-content-2.svg" },
+  { page: 2, src: "/svg/scroll-content-3.svg" },
+];
 
-  const items = [
-    "/svg/scroll-content-1.svg",
-    "/svg/scroll-content-2.svg",
-    "/svg/scroll-content-3.svg",
-  ];
-  const variants = {
-    enter: (dir) => ({
-      x: dir > 0 ? "100%" : "-100%",
+const PageSlider = ({ currentPage, setPage, direction }) => {
+  /* Add and remove pages from the array to checkout
+     how the gestures and pagination animations are
+     fully data and layout-driven. */
+  const hasPaginated = useRef(false);
 
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (dir) => ({
-      x: dir > 0 ? "-100%" : "100%",
-      opacity: 0,
-    }),
-  };
+  function detectPaginationGesture(e, { offset }) {
+    if (hasPaginated.current) return;
+    let newPage = currentPage;
+    const threshold = xOffset / 2;
 
-  const goToNextItem = () => {
-    setDirection(1);
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % items.length);
-  };
+    if (offset.x < -threshold) {
+      // If user is dragging left, go forward a page
+      newPage = currentPage + 1;
+    } else if (offset.x > threshold) {
+      // Else if the user is dragging right,
+      // go backwards a page
+      newPage = currentPage - 1;
+    }
 
-  const goToPrevItem = () => {
-    setDirection(-1);
-    setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + items.length) % items.length
-    );
-  };
-
-  const goToIndex = (i: number) => {
-    setDirection(currentIndex < i ? 1 : -1);
-    setCurrentIndex(i);
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (currentIndex === items.length) goToPrevItem();
-      else {
-        goToNextItem();
-      }
-    }, 3000);
-    lastCarouselIntervalId = interval;
-    return () => clearInterval(interval);
-  }, []);
+    if (newPage !== currentPage) {
+      hasPaginated.current = true;
+      // Wrap the page index to within the
+      // permitted page range
+      newPage = wrap(0, pages.length, newPage);
+      setPage(newPage, offset.x < 0 ? 1 : -1);
+    }
+  }
 
   return (
     <div
-      className="relative items-center"
+      className="relative"
       style={{
-        width: "80vw",
         height: "100vw",
       }}
     >
-      <AnimatePresence initial={false} custom={currentIndex}>
+      <AnimatePresence
+        // This will be used for components to resolve
+        // exit variants. It's necessary as removed
+        // components won't rerender with
+        // the latest state (as they've been removed)
+        custom={direction}
+      >
         <motion.div
-          key={currentIndex}
-          custom={direction}
+          key={currentPage}
+          className="slide"
+          data-page={currentPage}
           variants={variants}
           initial="enter"
-          animate="center"
+          animate="active"
           exit="exit"
-          transition={{
-            x: { type: "spring", stiffness: 300, damping: 30 },
-            opacity: { duration: 0.3 },
-          }}
           drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={1}
-          onDragStart={() => clearInterval(lastIntervalId)}
-          onDragEnd={(e, { offset, velocity }) => {
-            if (offset.x > 100 || velocity.x > 200) {
-              goToNextItem();
-            } else if (offset.x < -100 || velocity.x < -200) {
-              goToPrevItem();
-            }
-          }}
+          onDrag={detectPaginationGesture}
+          onDragStart={() => (hasPaginated.current = false)}
+          onDragEnd={() => (hasPaginated.current = true)}
+          // Snap the component back to the center
+          // if it hasn't paginated
+          dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+          // This will be used for components to resolve all
+          // other variants, in this case initial and animate.
+          custom={direction}
         >
-          <motion.img
-            src={items[currentIndex]}
-            className="absolute"
+          <img
+            src={pages[currentPage].src}
             style={{
               width: "80vw",
               height: "auto",
             }}
+            className="absolute"
           />
         </motion.div>
       </AnimatePresence>
-      <div className="flex flex-row w-full justify-center absolute bottom-0">
-        <motion.div
-          className="h-2 w-2 rounded-full mx-2 transition-all"
-          style={{
-            backgroundColor:
-              currentIndex === 0 ? colors.primary : colors.primary50,
-          }}
-          onClick={() => {
-            clearInterval(lastCarouselIntervalId);
-            goToIndex(0);
-          }}
-        />
-        <motion.div
-          className="h-2 w-2 rounded-full mx-2 transition-all"
-          style={{
-            backgroundColor:
-              currentIndex === 1 ? colors.primary : colors.primary50,
-          }}
-          onClick={() => {
-            clearInterval(lastCarouselIntervalId);
-            goToIndex(1);
-          }}
-        />
-        <motion.div
-          className="h-2 w-2 rounded-full mx-2 transition-all"
-          style={{
-            backgroundColor:
-              currentIndex === 2 ? colors.primary : colors.primary50,
-          }}
-          onClick={() => {
-            clearInterval(lastCarouselIntervalId);
-            goToIndex(2);
-          }}
-        />
-      </div>
     </div>
+  );
+};
+const Pagination = ({ currentPage, setPage }) => {
+  // Wrap all the pagination Indicators
+  // with AnimateSharedPresence
+  // so we can detect when Indicators
+  // with a layoutId are removed/added
+  return (
+    <div className="flex flex-row justify-center">
+      {pages.map(({ page }) => (
+        <Indicator
+          key={page}
+          onClick={() => setPage(page)}
+          isSelected={page === currentPage}
+        />
+      ))}
+    </div>
+  );
+};
+
+const Indicator = ({ isSelected, onClick }) => {
+  return (
+    <div className=" bg-light-300 h-2 w-2 rounded-full mx-2" onClick={onClick}>
+      {isSelected && (
+        <motion.div
+          className="bg-primary h-2 w-2 rounded-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+      )}
+    </div>
+  );
+};
+const Carousel = () => {
+  /* animations depending on the direction of travel */
+  const [[currentPage, direction], setCurrentPage] = useState([0, 0]);
+
+  function setPage(newPage, newDirection) {
+    if (!newDirection) newDirection = newPage - currentPage;
+    setCurrentPage([newPage, newDirection]);
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (currentPage === pages.length - 1) setCurrentPage([0, 0]);
+      else {
+        setCurrentPage((prevIndex) => [(prevIndex[0] + 1) % pages.length, 1]);
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  });
+  return (
+    <>
+      <PageSlider
+        currentPage={currentPage}
+        direction={direction}
+        setPage={setPage}
+      />
+      <Pagination currentPage={currentPage} setPage={setPage} />
+    </>
   );
 };
 

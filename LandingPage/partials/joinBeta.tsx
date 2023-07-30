@@ -67,7 +67,7 @@ export const JoinBetaModal = ({
               />
             </div>
             <div className="flex flex-1 flex-col md:flex-row justify-center items-center">
-              <div className=" w-1/2 flex flex-col  justify-center px-[4vw]  sm:w-10/12 mb-[5vh]">
+              <div className="w-full  flex flex-col  justify-center px-[4vw] md:w-1/2  mb-[5vh]">
                 <img
                   src="/svg/mail-pilot-logo.svg"
                   alt="Logo"
@@ -106,7 +106,7 @@ export const JoinBetaModal = ({
                 }}
                 className="absolute hidden z-50 place-self-center md:flex"
               />
-              <div className="w-1/2 flex  items-center px-[4vw] sm:w-10/12">
+              <div className=" w-full md:w-1/2 flex  items-center px-[4vw] ">
                 <Formik
                   initialValues={{ email: "", firstName: "" }}
                   validate={(values) => {
