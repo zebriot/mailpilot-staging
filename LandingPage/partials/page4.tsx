@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Button from "../../components/button";
 import Page5 from "./page5";
 import {
+  AnimatePresence,
   MotionValue,
   motion,
+  useInView,
   useMotionValueEvent,
   useScroll,
   useSpring,
@@ -189,42 +191,6 @@ const LookForwardScrollSM = () => {
     setInterval(updateCarouselItem, 2000);
   }, []);
 
-  useEffect(() => {
-    const parentWidth = document.getElementById(
-      "lookForwardScrollSM"
-    ).offsetWidth;
-    switch (currentSection) {
-      case 0: {
-        const id = setTimeout(() => {
-          lookForwardScrollRef.current.scrollTo({
-            left: 0,
-            behavior: "smooth",
-          });
-        }, 50);
-        return;
-      }
-      case 1: {
-        const id = setTimeout(() => {
-          lookForwardScrollRef.current.scrollTo({
-            left: parentWidth,
-            behavior: "smooth",
-          });
-        }, 50);
-        return;
-      }
-
-      case 2: {
-        const id = setTimeout(() => {
-          lookForwardScrollRef.current.scrollTo({
-            left: parentWidth * 2,
-            behavior: "smooth",
-          });
-        }, 50);
-        return;
-      }
-    }
-  }, [currentSection]);
-
   useMotionValueEvent(scrollX, "change", (latest) => {
     clearTimeout(timeoutId);
     const parentWidth = document.getElementById(
@@ -288,26 +254,137 @@ const LookForwardScrollSM = () => {
           }}
         />
       </motion.div>
-      <div className="flex flex-row justify-center">
+    </div>
+  );
+};
+let lastCarouselIntervalId;
+const Carousel = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(1); // 1 for right, -1 for left
+
+  const items = [
+    "/svg/scroll-content-1.svg",
+    "/svg/scroll-content-2.svg",
+    "/svg/scroll-content-3.svg",
+  ];
+  const variants = {
+    enter: (dir) => ({
+      x: dir > 0 ? "100%" : "-100%",
+
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir) => ({
+      x: dir > 0 ? "-100%" : "100%",
+      opacity: 0,
+    }),
+  };
+
+  const goToNextItem = () => {
+    setDirection(1);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % items.length);
+  };
+
+  const goToPrevItem = () => {
+    setDirection(-1);
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + items.length) % items.length
+    );
+  };
+
+  const goToIndex = (i: number) => {
+    setDirection(currentIndex < i ? 1 : -1);
+    setCurrentIndex(i);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (currentIndex === items.length) goToPrevItem();
+      else {
+        goToNextItem();
+      }
+    }, 3000);
+    lastCarouselIntervalId = interval;
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div
+      className="relative items-center"
+      style={{
+        width: "80vw",
+        height: "100vw",
+      }}
+    >
+      <AnimatePresence initial={false} custom={currentIndex}>
+        <motion.div
+          key={currentIndex}
+          custom={direction}
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            x: { type: "spring", stiffness: 300, damping: 30 },
+            opacity: { duration: 0.3 },
+          }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={1}
+          onDragStart={() => clearInterval(lastIntervalId)}
+          onDragEnd={(e, { offset, velocity }) => {
+            if (offset.x > 100 || velocity.x > 200) {
+              goToNextItem();
+            } else if (offset.x < -100 || velocity.x < -200) {
+              goToPrevItem();
+            }
+          }}
+        >
+          <motion.img
+            src={items[currentIndex]}
+            className="absolute"
+            style={{
+              width: "80vw",
+              height: "auto",
+            }}
+          />
+        </motion.div>
+      </AnimatePresence>
+      <div className="flex flex-row w-full justify-center absolute bottom-0">
         <motion.div
           className="h-2 w-2 rounded-full mx-2 transition-all"
           style={{
             backgroundColor:
-              currentSection === 0 ? colors.primary : colors.primary50,
+              currentIndex === 0 ? colors.primary : colors.primary50,
+          }}
+          onClick={() => {
+            clearInterval(lastCarouselIntervalId);
+            goToIndex(0);
           }}
         />
         <motion.div
           className="h-2 w-2 rounded-full mx-2 transition-all"
           style={{
             backgroundColor:
-              currentSection === 1 ? colors.primary : colors.primary50,
+              currentIndex === 1 ? colors.primary : colors.primary50,
+          }}
+          onClick={() => {
+            clearInterval(lastCarouselIntervalId);
+            goToIndex(1);
           }}
         />
         <motion.div
           className="h-2 w-2 rounded-full mx-2 transition-all"
           style={{
             backgroundColor:
-              currentSection === 2 ? colors.primary : colors.primary50,
+              currentIndex === 2 ? colors.primary : colors.primary50,
+          }}
+          onClick={() => {
+            clearInterval(lastCarouselIntervalId);
+            goToIndex(2);
           }}
         />
       </div>
@@ -324,6 +401,17 @@ export const Page4 = ({
   contentContainerStyle: () => any;
   spring: MotionValue<any>;
 }) => {
+  const refTop = useRef(null);
+  const refTopRight = useRef(null);
+  const refTopLeft = useRef(null);
+  const refBottomRight = useRef(null);
+  const refBottomLeft = useRef(null);
+
+  const isInViewTop = useInView(refTop);
+  const isInViewTopRight = useInView(refTopRight);
+  const isInViewTopLeft = useInView(refTopLeft);
+  const isInViewBottomRight = useInView(refBottomRight);
+  const isInViewBottomLeft = useInView(refBottomLeft);
   return (
     <motion.div
       className="relative flex flex-col  z-40"
@@ -334,7 +422,16 @@ export const Page4 = ({
         className="landing_page4__container z-40"
         style={contentContainerStyle()}
       >
-        <div className="landing_page4__content-container-top grid grid-cols-1 md:grid-cols-2">
+        <motion.div
+          transition={{ duration: 0.3 }}
+          layout
+          ref={refTop}
+          animate={{
+            scale: isInViewTop ? 1 : 0.95,
+            opacity: isInViewTop ? 1 : 0.6,
+          }}
+          className="landing_page4__content-container-top grid grid-cols-1 md:grid-cols-2"
+        >
           <div
             className="landing_page4__content-container-child-1-top "
             style={{ padding: "4vw" }}
@@ -360,9 +457,18 @@ export const Page4 = ({
               }}
             />
           </div>
-        </div>
-        <div className="landing_page4__container-default grid grid-cols-1 md:grid-cols-2">
-          <div className="landing_page4__content-container-default">
+        </motion.div>
+        <motion.div className="landing_page4__container-default grid grid-cols-1 md:grid-cols-2">
+          <motion.div
+            transition={{ duration: 0.3 }}
+            layout
+            ref={refTopLeft}
+            animate={{
+              scale: isInViewTopLeft ? 1 : 0.95,
+              opacity: isInViewTopLeft ? 1 : 0.6,
+            }}
+            className="landing_page4__content-container-default"
+          >
             <img src="/svg/csv-upload.svg" className=" mb-6" />
             <p className="landing_page__text-primary-header mb-3">CSV UPLOAD</p>
             <p className="landing_page__text-primary-title mb-3">
@@ -372,8 +478,17 @@ export const Page4 = ({
               Milo turns a CSV file into an irresistible email! Witness the
               magic of data and creativity combined. Make sure to keep Milo fed.
             </p>
-          </div>
-          <div className="landing_page4__content-container-default">
+          </motion.div>
+          <motion.div
+            transition={{ duration: 0.3 }}
+            layout
+            ref={refTopRight}
+            animate={{
+              scale: isInViewTopRight ? 1 : 0.95,
+              opacity: isInViewTopRight ? 1 : 0.6,
+            }}
+            className="landing_page4__content-container-default"
+          >
             <img src="/svg/accessibility.svg" className=" mb-6" />
             <p className="landing_page__text-primary-header mb-3">
               ACCESSIBILITY
@@ -385,10 +500,19 @@ export const Page4 = ({
               Email, socials, and more! We're adding exciting new ways, so stay
               tuned for a fun-filled ride. Join us and login with a smile!
             </p>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2  ">
-          <div className="justify-center m-[8vw] flex flex-col text-center md:m-0 md:text-left">
+          </motion.div>
+        </motion.div>
+        <motion.div className="grid grid-cols-1 md:grid-cols-2  ">
+          <motion.div
+            transition={{ duration: 0.3 }}
+            layout
+            ref={refBottomLeft}
+            animate={{
+              scale: isInViewBottomLeft ? 1 : 0.95,
+              opacity: isInViewBottomLeft ? 1 : 0.6,
+            }}
+            className="justify-center m-[8vw] flex flex-col text-center md:m-0 md:text-left"
+          >
             <p className="landing_page__text-primary-header mb-3">WORKFLOW</p>
             <p className="landing_page__text-primary-title mb-3">
               Things to look forward to 📆
@@ -397,14 +521,23 @@ export const Page4 = ({
               Exciting features coming soon! Stay tuned for our roadmap as we
               bring them to life. Get ready for a whole new level of innovation.
             </p>
-          </div>
-          <div className="hidden md:flex flex-col items-end flex-1">
+          </motion.div>
+          <motion.div
+            transition={{ duration: 0.3 }}
+            layout
+            ref={refBottomRight}
+            animate={{
+              opacity: isInViewBottomRight ? 1 : 0.6,
+              scale: isInViewBottomRight ? 1 : 0.95,
+            }}
+            className="hidden md:flex flex-col items-end flex-1"
+          >
             <LookForwardScrollMD spring={spring} />
-          </div>
-          <div className="md:hidden">
-            <LookForwardScrollSM />
-          </div>
-        </div>
+          </motion.div>
+          <motion.div className="md:hidden">
+            <Carousel />
+          </motion.div>
+        </motion.div>
       </motion.div>
     </motion.div>
   );

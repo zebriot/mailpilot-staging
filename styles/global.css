@@ -591,7 +591,7 @@ img {
 }
 
 .logo-default {
-  width: 8vw;
+  width: calc(120px);
   /* height: auto; */
 }
 

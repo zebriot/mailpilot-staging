@@ -57,6 +57,7 @@ export const LandingPage = () => {
     }
   }, []);
   const [footerHeight, setFooterHeight] = useState(0);
+  const [isSM, setSM] = useState(false);
 
   const openJoinBetaModal = () => {
     setJoinBetaModal(true);
@@ -70,6 +71,7 @@ export const LandingPage = () => {
     scrollRef && resizeObserver.observe(scrollRef.current);
     if (typeof window !== undefined) {
       setWindowHeight(window.innerHeight);
+      setSM(window.innerWidth <= 640);
       setFooterHeight(
         document.getElementById("landing_page5__container").offsetHeight
       );
@@ -159,7 +161,7 @@ export const LandingPage = () => {
   
   // as scrollY changes between 0px and the scrollable height, create a negative scroll value...
   // ... based on current scroll position to translateY the document in a natural way
-  const offsetLookForward = 2000; // 2 as the total scroll should be 3(total elements) minus 1
+  const offsetLookForward =isSM? 0 :2000; // 2 as the total scroll should be 3(total elements) minus 1
   const snapLookforwardStart = pageHeight - windowHeight - footerHeight; // Scrolly where the lookforward should start
   const snapLookforwardEnd =
     pageHeight + offsetLookForward - windowHeight - footerHeight; // Scrolly where the lookforward should end
@@ -173,7 +175,7 @@ export const LandingPage = () => {
     ],
     [0, -snapLookforwardStart, -snapLookforwardStart, -pageHeight]
   );
-  const physics = { damping: 40, mass: 0.27, stiffness: 300 }; // easing of smooth scroll
+  const physics = { damping: 40, mass: 0.1, stiffness: 800 }; // easing of smooth scroll
   const spring = useSpring(transform, physics); // apply easing to the negative scroll value
   const transformPage5 = useTransform(
     scrollY,

@@ -104,7 +104,7 @@ export const Header = ({
               height: 0,
               transition: { delay: 0.4, duration: 0.3 },
             }}
-            className="w-full bg-neutral900 absolute z-50 md:hidden"
+            className="w-full bg-neutral900 absolute z-50 md:hidden top-0"
           >
             <motion.div
               className="flex flex-col px-5"

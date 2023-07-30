@@ -7,6 +7,7 @@ import Input from "../../components/Input";
 import { useToast, validateEmail } from "../../utils";
 import Button from "../../components/button";
 import { colors } from "../../styles";
+import Router from "next/router";
 
 // import Button from "../../../button";
 // import { colors } from "../../../../styles";
@@ -187,8 +188,20 @@ export const JoinBetaModal = ({
                         style={{ fontSize: "14px", fontWeight: 500 }}
                       >
                         By signing up, you agree to our{" "}
-                        <span className=" text-primary">Terms</span> and{" "}
-                        <span className="text-primary">Privacy Policy</span>.
+                        <span
+                          className=" text-primary cursor-pointer"
+                          onClick={() => Router.push({ pathname: "/tnc" })}
+                        >
+                          Terms
+                        </span>{" "}
+                        and{" "}
+                        <span
+                          className="text-primary cursor-pointer"
+                          onClick={() => Router.push({ pathname: "/privacy" })}
+                        >
+                          Privacy Policy
+                        </span>
+                        .
                       </p>
                     </Form>
                   )}

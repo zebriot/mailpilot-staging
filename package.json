@@ -11,6 +11,7 @@
     "@hookform/resolvers": "2.8.8",
     "@moralisweb3/common-sol-utils": "2.12.0",
     "@mui/material": "5.11.7",
+    "@popmotion/popcorn": "^0.4.4",
     "@reduxjs/toolkit": "1.8.1",
     "@szhsin/react-menu": "4.0.0",
     "@zeit/next-css": "1.0.1",
