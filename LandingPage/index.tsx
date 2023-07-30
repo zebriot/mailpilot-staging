@@ -119,6 +119,43 @@ export const LandingPage = () => {
     setDarkHeaderOpen(true);
     setCurrentPage(4);
   });
+
+  const page4AnimatedContainer = () => {
+      return {
+        borderRadius: useTransform(
+          scrollY,
+          [
+            snapLookforwardEnd,
+            pageHeight - windowHeight + offsetLookForward,
+          ],
+          [0, 100]
+        ),
+        scale: useTransform(
+          scrollY,
+          [
+            0,
+            snapLookforwardEnd,
+            pageHeight - windowHeight + offsetLookForward,
+          ],
+          [1, 1, 0.95]
+        ),
+      };
+
+  };
+  const page4AnimatedContentContainer = () => {
+
+      return {
+        borderRadius: useTransform(
+          scrollY,
+          [ 0,
+            snapLookforwardEnd,
+            pageHeight - windowHeight + offsetLookForward,
+          ],
+          [ 0,0, 100]
+        ),
+      };
+
+  };
   
   // as scrollY changes between 0px and the scrollable height, create a negative scroll value...
   // ... based on current scroll position to translateY the document in a natural way
@@ -214,12 +251,8 @@ export const LandingPage = () => {
         </div>
 
         <Page4
-          containerStyle={function () {
-            throw new Error("Function not implemented.");
-          }}
-          contentContainerStyle={function () {
-            throw new Error("Function not implemented.");
-          }}
+          containerStyle={page4AnimatedContainer}
+          contentContainerStyle={page4AnimatedContentContainer}
           spring={springLookForward}
         />
         <motion.div

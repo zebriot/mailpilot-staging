@@ -328,11 +328,11 @@ export const Page4 = ({
     <motion.div
       className="relative flex flex-col  z-40"
       id="landing_page4__container"
-      // style={containerStyle()}
+      style={containerStyle()}
     >
       <motion.div
         className="landing_page4__container z-40"
-        // style={contentContainerStyle()}
+        style={contentContainerStyle()}
       >
         <div className="landing_page4__content-container-top grid grid-cols-1 md:grid-cols-2">
           <div
