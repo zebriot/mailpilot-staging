@@ -40,7 +40,7 @@ export const JoinBetaModal = ({
           initial={{ opacity: 0, top: 0 }}
           animate={{ opacity: 1, top: 0 }}
           exit={{ opacity: 0, top: 0 }}
-          className="home_select-email-modal-container fixed cursor-none "
+          className="home_select-email-modal-container fixed cursor-you "
           onClick={(e) => {
             e.stopPropagation();
             setOpen(false);
@@ -48,7 +48,7 @@ export const JoinBetaModal = ({
           style={{ zIndex: 1000 }}
         >
           <motion.div
-            id="join-beta-modal-content"
+            id="join-beta-modal-content "
             transition={{ duration: 0.4, type: "spring" }}
             initial={{ marginTop: "100vh" }}
             animate={{ marginTop: 0 }}
@@ -63,7 +63,6 @@ export const JoinBetaModal = ({
                 title="Close"
                 preset="secondary"
                 onPress={() => setOpen(false)}
-                cursor={false}
               />
             </div>
             <div className="flex flex-1 flex-col md:flex-row justify-center items-center">

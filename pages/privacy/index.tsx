@@ -131,7 +131,7 @@ export const PP = () => {
       <p>
         If you have any questions or concerns regarding this Privacy Policy or
         your personal information, please contact us at{" "}
-        <a href="mailto:contact@mailpilot.ai">contact@mailpilot.com</a>.
+        <a href="mailto:contact@mailpilot.ai">contact@mailpilot.ai</a>.
       </p>
       <br />
 

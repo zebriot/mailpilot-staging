@@ -1,4 +1,21 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, {
+  ClassAttributes,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useScroll,
+  useSpring,
+  useTransform,
+  useViewportScroll,
+} from "framer-motion";
+import SimpleBar from "simplebar-react";
 import {
   Header,
   HeaderAbsolute,
@@ -9,45 +26,132 @@ import {
   Page4,
   Page5,
 } from "./partials";
-import Head from "next/head";
-import {
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  useTransform,
-} from "framer-motion";
-import { current } from "@reduxjs/toolkit";
-import { colors } from "../styles";
+import { useInView } from "react-intersection-observer";
 import CustomCursor from "./partials/customCursor";
 import { JoinBetaModal } from "./partials/joinBeta";
+import Head from "next/head";
 
 export const LandingPage = () => {
-  const { scrollY, scrollYProgress } = useScroll();
+  // scroll container
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const hiddenScrollRef = useRef<HTMLDivElement>(null);
 
-  const scrollRef = useRef<HTMLDivElement>();
-  const [open, setOpen] = useState(false);
   const [darkHeaderOpen, setDarkHeaderOpen] = useState(false);
+  const [headerOpen, setHeaderOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [footerHeight, setFooterHeight] = useState(0);
   const [fullHeight, setFullHeight] = useState(0);
   const [joinBetaModal, setJoinBetaModal] = useState(false);
+  // page scrollable height based on content length
+  const [pageHeight, setPageHeight] = useState(0);
+  const [windowHeight, setWindowHeight] = useState(0);
+  const [lookForwardHeight, setLookForwardHeight] = useState(0);
 
-  console.log("footerHeight", footerHeight);
-
-  useEffect(() => {
-    if (typeof window !== undefined) {
-      setFooterHeight(
-        document.getElementById("landing_page5__container").offsetHeight
-      );
-      setFullHeight(
-        document.getElementById("main-landing-content").offsetHeight
-      );
+  // update scrollable height when browser is resizing
+  const resizePageHeight = useCallback((entries) => {
+    const lookForwardScrollMD = document.getElementById(
+      "look-forward-scroll-md"
+    );
+    setLookForwardHeight(lookForwardScrollMD.offsetHeight);
+    for (let entry of entries) {
+      setPageHeight(entry.contentRect.height);
     }
-  });
+  }, []);
+  const [footerHeight, setFooterHeight] = useState(0);
 
   const openJoinBetaModal = () => {
     setJoinBetaModal(true);
   };
+
+  // observe when browser is resizing
+  useLayoutEffect(() => {
+    const resizeObserver = new ResizeObserver((entries) =>
+      resizePageHeight(entries)
+    );
+    scrollRef && resizeObserver.observe(scrollRef.current);
+    if (typeof window !== undefined) {
+      setWindowHeight(window.innerHeight);
+      setFooterHeight(
+        document.getElementById("landing_page5__container").offsetHeight
+      );
+    }
+    return () => resizeObserver.disconnect();
+  }, [scrollRef, resizePageHeight]);
+
+  const { scrollY } = useScroll(); // measures how many pixels user has scrolled vertically
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    console.log("Header", latest);
+    // latest > 120 ? setOpen(true) : setOpen(false);
+    const page1 = document.getElementById("landing_page1__container");
+    const page2 = document.getElementById("landing_page2__container");
+    const page3 = document.getElementById("landing_page3__container");
+    const page4 = document.getElementById("landing_page4__container");
+    const page5 = document.getElementById("landing_page5__container");
+
+    console.log("latest", latest);
+
+    if (latest < page1.offsetHeight) {
+      setCurrentPage(1);
+      setHeaderOpen(latest > 120);
+      setDarkHeaderOpen(false);
+      return;
+    }
+    if (latest < page1.offsetHeight + page2.offsetHeight + page3.offsetHeight) {
+      setCurrentPage(2);
+      setHeaderOpen(true);
+      setDarkHeaderOpen(false);
+      return;
+    }
+    if (
+      latest <
+      page1.offsetHeight +
+        page2.offsetHeight +
+        page3.offsetHeight +
+        page4.offsetHeight -
+        page5.offsetHeight +
+        offsetLookForward
+    ) {
+      setCurrentPage(3);
+      setHeaderOpen(true);
+      setDarkHeaderOpen(false);
+      return;
+    }
+    setHeaderOpen(false);
+    setDarkHeaderOpen(true);
+    setCurrentPage(4);
+  });
+  
+  // as scrollY changes between 0px and the scrollable height, create a negative scroll value...
+  // ... based on current scroll position to translateY the document in a natural way
+  const offsetLookForward = 2000; // 2 as the total scroll should be 3(total elements) minus 1
+  const snapLookforwardStart = pageHeight - windowHeight - footerHeight; // Scrolly where the lookforward should start
+  const snapLookforwardEnd =
+    pageHeight + offsetLookForward - windowHeight - footerHeight; // Scrolly where the lookforward should end
+  const transform = useTransform(
+    scrollY,
+    [
+      0,
+      snapLookforwardStart,
+      snapLookforwardEnd,
+      pageHeight + offsetLookForward,
+    ],
+    [0, -snapLookforwardStart, -snapLookforwardStart, -pageHeight]
+  );
+  const physics = { damping: 40, mass: 0.27, stiffness: 300 }; // easing of smooth scroll
+  const spring = useSpring(transform, physics); // apply easing to the negative scroll value
+  const transformPage5 = useTransform(
+    scrollY,
+    // pageHeight - windowHeight => TOTAL AVAILABLE SCROLL then  we minus the footerheight from it, that is when the footer is almost appearing
+    [snapLookforwardEnd, pageHeight - windowHeight + offsetLookForward],
+    [-footerHeight, 0]
+  );
+  const springPage5 = useSpring(transformPage5, physics);
+  const transformLookForward = useTransform(
+    scrollY,
+    // pageHeight - windowHeight => TOTAL AVAILABLE SCROLL then  we minus the footerheight from it, that is when the footer is almost appearing
+    [snapLookforwardStart, snapLookforwardEnd],
+    [0, 1]
+  );
+  const springLookForward = useSpring(transformLookForward, physics);
 
   const scrollToPage = (page: number) => {
     const page1 = document.getElementById("landing_page1__container");
@@ -71,7 +175,8 @@ export const LandingPage = () => {
         page1.offsetHeight +
         page2.offsetHeight +
         page3.offsetHeight +
-        page4.offsetHeight;
+        page4.offsetHeight +
+        offsetLookForward;
     }
     window.scrollTo({
       top: scrollTo,
@@ -79,190 +184,9 @@ export const LandingPage = () => {
     });
   };
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    console.log("Header", latest);
-    // latest > 120 ? setOpen(true) : setOpen(false);
-    const page1 = document.getElementById("landing_page1__container");
-    const page2 = document.getElementById("landing_page2__container");
-    const page3 = document.getElementById("landing_page3__container");
-    const page4 = document.getElementById("landing_page4__container");
-    const page5 = document.getElementById("landing_page5__container");
-
-    console.log("latest", latest);
-
-    if (latest < page1.offsetHeight) {
-      setCurrentPage(1);
-      setOpen(latest > 120);
-      setDarkHeaderOpen(false);
-      return;
-    }
-    if (latest < page1.offsetHeight + page2.offsetHeight + page3.offsetHeight) {
-      setCurrentPage(2);
-      setOpen(true);
-      setDarkHeaderOpen(false);
-      return;
-    }
-    if (
-      latest <
-      page1.offsetHeight +
-        page2.offsetHeight +
-        page3.offsetHeight +
-        page4.offsetHeight -
-        page5.offsetHeight
-    ) {
-      setCurrentPage(3);
-      setOpen(true);
-      setDarkHeaderOpen(false);
-      return;
-    }
-    setOpen(false);
-    setDarkHeaderOpen(true);
-    setCurrentPage(4);
-  });
-
-  const page4AnimatedContainer = () => {
-    if (typeof window === "object") {
-      const page5 = document.getElementById("landing_page5__container");
-      const mainScroll = document.getElementById("main-landing-content");
-      console.log(
-        "mainScroll.scrollHeight",
-        mainScroll.scrollHeight - window.innerHeight
-      );
-      return {
-        borderRadius: useTransform(
-          scrollY,
-          [
-            mainScroll.scrollHeight - window.innerHeight - page5.offsetHeight,
-            mainScroll.scrollHeight - window.innerHeight,
-          ],
-          [0, 100]
-        ),
-        scale: useTransform(
-          scrollY,
-          [
-            0,
-            mainScroll.scrollHeight - window.innerHeight - page5.offsetHeight,
-            mainScroll.scrollHeight - window.innerHeight,
-          ],
-          [1, 1, 0.95]
-        ),
-      };
-    }
-  };
-  const page4AnimatedContentContainer = () => {
-    if (typeof window === "object") {
-      const page5 = document.getElementById("landing_page5__container");
-      const mainScroll = document.getElementById("main-landing-container");
-      console.log(
-        "mainScroll.scrollHeight",
-        mainScroll.scrollHeight - window.innerHeight
-      );
-      return {
-        borderRadius: useTransform(
-          scrollY,
-          [
-            mainScroll.scrollHeight - window.innerHeight - page5.offsetHeight,
-           mainScroll.scrollHeight - window.innerHeight,
-          ],
-          [0, 100]
-        ),
-      };
-    }
-  };
-
-  useEffect(() => {
-    let parentPrevented = false;
-
-    // document.addEventListener("DOMContentLoaded", function () {
-    var parentComponent = document.getElementById("main-landing-container");
-
-    var lookforwardScroll = document.getElementById("lookForwardScrollMD");
-    const page5 = document.getElementById("landing_page5__container");
-
-    // return {
-    //   borderRadius: useTransform(
-    //     scrollY,
-    //     [
-    //       mainScroll.scrollHeight - window.innerHeight - page5.offsetHeight,
-    //       mainScroll.scrollHeight - window.innerHeight,
-    //     ],
-    //     [0, 100]
-    //   ),
-    // };
-    // if (!lookforwardScroll) return
-    parentComponent.addEventListener("wheel", function (e: WheelEvent) {
-      console.log("parentPrevented", parentPrevented);
-      // e.preventDefault();
-    });
-let timeoutId 
-    window.addEventListener("wheel", function (e: WheelEvent) {
-      // parentComponent.animate({scrollTop :parentComponent.scrollTop += e.deltaY / 5 }, "fast")
-      // setTimeout(() => parentComponent.scrollTo({
-      //   top: (parentComponent.scrollTop += e.deltaY),
-      //   behavior: "smooth",
-      // });)
-      // parentComponent.scrollTop += e.deltaY / 5;
-      // Check if the scroll position is at the top or bottom
-      var bottom = parentComponent.scrollHeight - window.innerHeight;
-      // if (
-      //   parentComponent.scrollTop === bottom - page5.offsetHeight &&
-      //   // is lookforward scroll at not fully scrolled
-      //   e.deltaY > 0 &&
-      //   lookforwardScroll.scrollTop > 0 &&
-      //   lookforwardScroll.scrollTop > 0 &&
-      //   lookforwardScroll.scrollTop <
-      //     lookforwardScroll.scrollHeight - lookforwardScroll.offsetHeight
-      // ) {
-      //   e.preventDefault();
-      //   lookforwardScroll.scrollTop += e.deltaY;
-      // }
-      // Calculate the direction and amount of scrolling
-      // var delta = e.deltaY;
-      console.log("e.deltaY ", e.deltaY);
-      console.log("bottom ", bottom - page5.offsetHeight, "===", scrollY.get());
-
-      console.log("SCROLL TOPPP  ", scrollY.get());
-
-      if (
-        scrollY.get() <= bottom - page5.offsetHeight + 100 &&
-        scrollY.get() >= bottom - page5.offsetHeight - 100
-      ) {
-        // lookforwardScroll.scrollTop += e.deltaY;
-        parentPrevented = true;
-      } else {
-        parentPrevented = false;
-      }
-
-      // console.log(
-      //   "SCROLLING main-landing-content SCROLL TOP",
-      //   parentComponent.scrollTop,
-      //   "\n",
-      //   "bottom - page5.offsetHeight",
-      //   bottom - page5.offsetHeight,
-      //   "\n",
-      //   "lookforwardScroll.scrollHeight - lookforwardScroll.offsetHeight",
-      //   lookforwardScroll.scrollHeight - lookforwardScroll.offsetHeight,
-      //   "\n"
-      // );
-      // If at the top and scrolling up, or at the bottom and scrolling down, prevent default
-      // if (
-      //   parentComponent.scrollTop === bottom - page5.offsetHeight &&
-      //   // is lookforward scroll at not fully scrolled
-      //   delta > 0  && lookforwardScroll.scrollTop > 0
-      //   lookforwardScroll.scrollTop > 0 &&
-      //   lookforwardScroll.scrollTop <
-      //     lookforwardScroll.scrollHeight - lookforwardScroll.offsetHeight
-      // ) {
-      //   e.preventDefault();
-      //   lookforwardScroll.scrollTop += delta;
-      // }
-      // Manually scroll the child container
-    });
-    // });
-  }, []);
 
   return (
-    <div className="relative ">
+    <div className="relative flex flex-col items-center bg-neutral100 cursor-you">
       <Head>
         <title>Mail Pilot</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -272,51 +196,57 @@ let timeoutId
           rel="stylesheet"
         ></link>
       </Head>
+
       <motion.div
-        className="h-full w-full flex flex-col items-center bg-neutral100 cursor-nonetempLinkedEmails"
+        ref={scrollRef}
+        style={{ y: spring }} // translateY of scroll container using negative scroll value
+        className="scroll-container z-30"
         id="main-landing-container"
       >
-        <div
-          ref={scrollRef}
-          className=" flex flex-1 flex-col z-30 bg-neutral100 "
-          id="main-landing-content"
-        >
-          <Header
-            scrollToPage={scrollToPage}
-            openJoinBetaModal={openJoinBetaModal}
-          />
-          <div className="landing_page__mesh_background z-30 " id="top-test">
-            <Page1 scrollY={scrollY} openJoinBetaModal={openJoinBetaModal} />
-            <Page2 />
-            <Page3 />
-          </div>
-          <Page4
-            containerStyle={page4AnimatedContainer}
-            contentContainerStyle={page4AnimatedContentContainer}
-          />
-          <div
-            style={{
-              height: `${footerHeight}px`,
-              width: "100%",
-            }}
-          ></div>
-          <Page5 />
+        <Header
+          scrollToPage={scrollToPage}
+          openJoinBetaModal={openJoinBetaModal}
+        />
+        <div className="landing_page__mesh_background z-30 relative">
+          <Page1 scrollY={scrollY} openJoinBetaModal={openJoinBetaModal} />
+          <Page2 />
+          <Page3 />
         </div>
-        <HeaderAbsoluteDark
-          visible={darkHeaderOpen}
-          currentPage={currentPage}
-          scrollToPage={scrollToPage}
-          openJoinBetaModal={openJoinBetaModal}
+
+        <Page4
+          containerStyle={function () {
+            throw new Error("Function not implemented.");
+          }}
+          contentContainerStyle={function () {
+            throw new Error("Function not implemented.");
+          }}
+          spring={springLookForward}
         />
-        <HeaderAbsolute
-          visible={open}
-          currentPage={currentPage}
-          scrollToPage={scrollToPage}
-          openJoinBetaModal={openJoinBetaModal}
-        />
+        <motion.div
+          style={{
+            translateY: springPage5,
+          }}
+        >
+          <Page5 />
+        </motion.div>
       </motion.div>
-      <CustomCursor />
+      <HeaderAbsoluteDark
+        visible={darkHeaderOpen}
+        currentPage={currentPage}
+        scrollToPage={scrollToPage}
+        openJoinBetaModal={openJoinBetaModal}
+      />
+      <HeaderAbsolute
+        visible={headerOpen}
+        currentPage={currentPage}
+        scrollToPage={scrollToPage}
+        openJoinBetaModal={openJoinBetaModal}
+      />
       <JoinBetaModal open={joinBetaModal} setOpen={setJoinBetaModal} />
+      <div
+        ref={hiddenScrollRef}
+        style={{ height: pageHeight + offsetLookForward }}
+      />
     </div>
   );
 };

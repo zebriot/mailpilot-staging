@@ -23,7 +23,7 @@
 }
 
 .button-container-primary:hover {
-    cursor: pointer;
+    /* cursor: pointer; */
     background-color: #5353DA;
     box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
 }
@@ -74,7 +74,7 @@
 }
 
 .button-container-secondary:hover {
-    cursor: pointer;
+
     box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
 }
 
@@ -125,7 +125,7 @@
 }
 
 .button-container-delete:hover {
-    cursor: pointer;
+
     box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
 }
 
@@ -151,7 +151,7 @@
 }
 
 .button-container-delete-outline:hover {
-    cursor: pointer;
+
 }
 
 .button-container-delete-outline:hover>.button-text-delete {
@@ -176,7 +176,7 @@
 }
 
 .button-text-delete-outline:hover {
-    cursor: pointer;
+
 }
 
 
@@ -198,5 +198,5 @@
 }
 
 .button-text-delete:hover {
-    cursor: pointer;
+
 }

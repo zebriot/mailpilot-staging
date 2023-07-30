@@ -180,9 +180,9 @@ export const Page1 = ({ scrollY, openJoinBetaModal }) => {
           <Button
             title="Join Beta"
             preset="primary"
-            containerStyle={{ width: "140px" }}
-            cursor={false}
+            containerStyle={{ width: "120px" }}
             onPress={openJoinBetaModal}
+            cursor={false}
           />
         </div>
       </div>

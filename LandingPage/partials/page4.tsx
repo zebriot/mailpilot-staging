@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Button from "../../components/button";
 import Page5 from "./page5";
 import {
+  MotionValue,
   motion,
   useMotionValueEvent,
   useScroll,
@@ -14,19 +15,18 @@ let timeoutId;
 let lastIntervalId;
 const LookingForwardItemVariantsMD = {
   hidden: {
-    opacity: 0.4,
+    opacity: 0,
     top: "10vw",
-    scaleY: 0,
+    // scaleY: 0,
   },
   visible: {
     opacity: 1,
     top: 0,
-    scaleY: 1,
+    // scaleY: 1,
   },
 };
 
-const LookForwardScrollMD = () => {
-
+const LookForwardScrollMD = ({ spring }: { spring: MotionValue<any> }) => {
   const handleChildMouseEnter = () => {
     const mainScroll = document.getElementById("landing_page5__container");
     // Disable scrolling on the parent when the cursor enters the child element
@@ -54,17 +54,18 @@ const LookForwardScrollMD = () => {
     restDelta: 0.001,
   });
 
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+  useMotionValueEvent(spring, "change", (latest) => {
     clearTimeout(timeoutId);
-    const parentWidth =
-      document.getElementById("lookForwardScrollMD").offsetWidth;
+    const parentWidth = document.getElementById(
+      "look-forward-scroll-md"
+    ).offsetWidth;
     console.log("scrollX3", latest, parentWidth);
 
-    if (latest < 0.2) {
+    if (latest < 0.3) {
       setCurrentSection(0);
       return;
     }
-    if (latest < 0.8) {
+    if (latest < 0.7) {
       setCurrentSection(1);
 
       return;
@@ -76,7 +77,7 @@ const LookForwardScrollMD = () => {
     <div className=" relative flex flex-row items-center">
       <motion.div
         ref={lookForwardScrollRef}
-        id="lookForwardScrollMD"
+        id="look-forward-scroll-md"
         className="flex flex-col overflow-scroll "
         style={{
           // as per the ratio of the images i am  using
@@ -146,7 +147,7 @@ const LookForwardScrollMD = () => {
         <motion.div
           className=" bg-primary-500 place-self-start"
           style={{
-            scaleY,
+            scaleY: spring,
             borderRadius: "30px",
             width: "100%",
             height: "100%",
@@ -317,19 +318,21 @@ const LookForwardScrollSM = () => {
 export const Page4 = ({
   containerStyle,
   contentContainerStyle,
+  spring,
 }: {
   containerStyle: () => any;
   contentContainerStyle: () => any;
+  spring: MotionValue<any>;
 }) => {
   return (
     <motion.div
       className="relative flex flex-col  z-40"
       id="landing_page4__container"
-      style={containerStyle()}
+      // style={containerStyle()}
     >
       <motion.div
         className="landing_page4__container z-40"
-        style={contentContainerStyle()}
+        // style={contentContainerStyle()}
       >
         <div className="landing_page4__content-container-top grid grid-cols-1 md:grid-cols-2">
           <div
@@ -396,7 +399,7 @@ export const Page4 = ({
             </p>
           </div>
           <div className="hidden md:flex flex-col items-end flex-1">
-            <LookForwardScrollMD />
+            <LookForwardScrollMD spring={spring} />
           </div>
           <div className="md:hidden">
             <LookForwardScrollSM />

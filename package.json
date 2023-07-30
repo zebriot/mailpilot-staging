@@ -66,6 +66,7 @@
     "react-transition-group": "4.4.5",
     "redux-persist": "6.0.0",
     "redux-thunk": "2.4.2",
+    "resize-observer-polyfill": "^1.5.1",
     "simplebar-react": "^3.2.4",
     "tailwind-toast": "1.1.0",
     "use-telephone": "1.0.13"

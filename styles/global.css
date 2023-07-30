@@ -894,7 +894,7 @@ div.toolbar button {
   width: 4px;
   background-color: #CBCBCB;
   border-radius: 20px;
-  margin-block: 10px;
+/* margin-top: 10px; */
   position: absolute;
     left: 0;
     right: -20px;

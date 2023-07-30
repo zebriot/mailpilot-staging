@@ -305,7 +305,7 @@ export const HeaderAbsolute = ({
           className="relative h-full flex items-center"
           onClick={() => {
             if (i.page === 5) {
-              scrollToPage(0)
+              scrollToPage(0);
               setTimeout(openJoinBetaModal, 200);
             } else scrollToPage(i.page);
           }}

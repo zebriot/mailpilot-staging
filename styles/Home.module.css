@@ -178,6 +178,8 @@
 /* Background */
 .body {
   background-color: #F5F7FA;
+  overflow: clip;
+  overscroll-behavior-y: none;
 }
 
 .fade {
@@ -198,6 +200,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }

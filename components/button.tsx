@@ -25,7 +25,7 @@ const getStylesForVariant = (
     case "primary":
       return {
         container: `button-container-primary ${disabled && "disabled"} ${
-          !cursor && "hover:cursor-none"
+          cursor && "hover:cursor-pointer"
         }`,
         icon: "button-icon-primary",
         title: "button-text-primary",
@@ -33,7 +33,7 @@ const getStylesForVariant = (
     case "secondary":
       return {
         container: `button-container-secondary ${disabled && "disabled"} ${
-          !cursor && "hover:cursor-none"
+          cursor && "hover:cursor-pointer"
         }`,
         icon: "button-icon-secondary",
         title: "button-text-secondary",
@@ -41,7 +41,7 @@ const getStylesForVariant = (
     case "delete":
       return {
         container: `button-container-delete ${disabled && "disabled"} ${
-          !cursor && "hover:cursor-none"
+          cursor && "hover:cursor-pointer"
         }`,
         icon: "button-icon-delete",
         title: "button-text-delete",
@@ -49,7 +49,7 @@ const getStylesForVariant = (
     case "delete-outline":
       return {
         container: `button-container-delete-outline ${disabled && "disabled"} ${
-          !cursor && "hover:cursor-none"
+          cursor && "hover:cursor-pointer"
         }`,
         icon: "button-icon-delete-outline",
         title: "button-text-delete-outline",
@@ -96,10 +96,16 @@ export const Button = ({
         <>
           {iconSrc && iconPosition === "left" && (
             <img
-
               className={classes.icon}
               src={iconSrc}
-              style={{ color: "#FFF", marginRight: "5px",height:'19px', width:'19px',resize:'both',  ...iconStyle }}
+              style={{
+                color: "#FFF",
+                marginRight: "5px",
+                height: "19px",
+                width: "19px",
+                resize: "both",
+                ...iconStyle,
+              }}
               color={"#FFF"}
             />
           )}
@@ -110,9 +116,15 @@ export const Button = ({
             <img
               className={classes.icon}
               src={iconSrc}
-              style={{ color: "#FFF", marginLeft: "5px",height:'19px', width:'19px', resize:'both',  ...iconStyle }}
+              style={{
+                color: "#FFF",
+                marginLeft: "5px",
+                height: "19px",
+                width: "19px",
+                resize: "both",
+                ...iconStyle,
+              }}
               color={"#FFF"}
-
             />
           )}
         </>

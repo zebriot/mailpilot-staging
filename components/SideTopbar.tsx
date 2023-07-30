@@ -111,11 +111,11 @@ const SideTopbar = ({ children }) => {
 
   if (!activeMenu?.id)
     return (
-      <div className="h-full w-screen flex-row flex flex-1 ">{children}</div>
+      <div className="h-screen w-screen">{children}</div>
     );
 
   return (
-    <div className="h-full w-screen flex-row flex flex-1 ">
+    <div className="h-full w-screen flex-row flex flex-1" id="app-container">
       <div className="sidebar-container ">
         <div
           className={wrapperClasses}
